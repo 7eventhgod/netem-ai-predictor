@@ -1,0 +1,24 @@
+# 操作系统生成的文件
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 编辑器配置
+.vscode/
+.idea/
+*.swp
+*.swo
+.history/
+
+# 环境变量 (如果未来有后端)
+.env
+.env.local
+
+# 日志文件
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
