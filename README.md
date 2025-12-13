@@ -65,7 +65,7 @@
 
 ## � 界面预览 (Screenshots)
 
-![alt text](运行界面.png)
+![运行界面预览](./assets/运行界面.png)
 
 ---
 
