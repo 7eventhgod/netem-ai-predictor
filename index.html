@@ -4,12 +4,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026考研全科冲刺：无限题库版</title>
+    <title>2026考研全科预测引擎</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- MathJax for rendering complex generated math -->
+
+    <!-- MathJax Configuration (完美渲染) -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            options: {
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
+            },
+            startup: {
+                pageReady: () => {
+                    return MathJax.startup.defaultPageReady();
+                }
+            }
+        };
+    </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Merriweather:ital,wght@0,300;0,700;1,300&display=swap');
 
@@ -53,7 +72,7 @@
         }
 
         .fade-in {
-            animation: fadeIn 0.4s ease-out;
+            animation: fadeIn 0.5s ease-out;
         }
 
         @keyframes fadeIn {
@@ -68,14 +87,7 @@
             }
         }
 
-        /* Math & Answer Styles */
-        .math-expr {
-            font-family: 'Times New Roman', serif;
-            font-style: italic;
-            font-size: 1.15rem;
-            letter-spacing: 0.3px;
-        }
-
+        /* Styles */
         .ans-badge {
             display: inline-block;
             padding: 2px 8px;
@@ -123,222 +135,317 @@
                 transform: rotate(360deg);
             }
         }
+
+        /* MathJax Override */
+        mjx-container {
+            font-size: 1.1em !important;
+            overflow-x: auto;
+            overflow-y: hidden;
+            max-width: 100%;
+        }
+
+        /* Toolkit Classes */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .opacity-0 {
+            opacity: 0;
+        }
+
+        .opacity-100 {
+            opacity: 1;
+        }
+
+        .transition-opacity {
+            transition: opacity 0.3s ease-in-out;
+        }
     </style>
 </head>
 
 <body class="min-h-screen flex flex-col">
 
-    <!-- Emergency Header -->
+    <!-- Header -->
     <nav id="navbar" class="text-white shadow-lg sticky top-0 z-50 theme-transition bg-slate-900">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center space-x-3">
-                <span class="text-xl font-bold serif">YangYuxin's Infinite</span>
+                <span class="text-xl font-bold serif">2026 考研冲刺</span>
                 <span id="countdown-badge"
-                    class="text-xs bg-yellow-400 text-slate-900 px-2 py-1 rounded font-bold animate-pulse">最后 7 天</span>
+                    class="text-xs bg-yellow-400 text-slate-900 px-2 py-1 rounded font-bold animate-pulse">倒计时</span>
             </div>
             <div class="flex bg-white/10 rounded-lg p-1 space-x-1">
                 <button onclick="switchSubject('math')" id="nav-math"
-                    class="px-3 py-1 text-xs font-bold rounded transition bg-white text-slate-900">数学</button>
+                    class="px-5 py-2 text-base font-bold rounded-lg transition bg-white text-slate-900 shadow-md">数学</button>
                 <button onclick="switchSubject('eng')" id="nav-eng"
-                    class="px-3 py-1 text-xs font-bold rounded transition hover:bg-white/20 text-white">英语</button>
+                    class="px-5 py-2 text-base font-bold rounded-lg transition hover:bg-white/20 text-white">英语</button>
                 <button onclick="switchSubject('pol')" id="nav-pol"
-                    class="px-3 py-1 text-xs font-bold rounded transition hover:bg-white/20 text-white">政治</button>
+                    class="px-5 py-2 text-base font-bold rounded-lg transition hover:bg-white/20 text-white">政治</button>
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
+    <!-- Hero -->
     <header id="hero-section"
-        class="relative text-white py-12 theme-transition bg-gradient-to-b from-slate-900 to-slate-800">
+        class="relative text-white py-10 theme-transition bg-gradient-to-b from-slate-900 to-slate-800">
         <div class="container mx-auto px-4 text-center">
-            <h1 id="hero-title" class="text-3xl md:text-5xl font-bold mb-4 serif text-yellow-400">无限题库 · 极速生成</h1>
-            <p id="hero-subtitle" class="text-slate-200 text-base md:text-lg max-w-2xl mx-auto mb-8">
-                杨宇欣同学，全学科 AI 预测引擎已就绪。<br>点击 <span class="font-bold border-b-2 border-yellow-400">🔮 AI 生成</span>，获取属于你的
-                2026 押题。
+            <h1 id="hero-title" class="text-3xl md:text-4xl font-bold mb-3 serif text-yellow-400">2026考研全科预测引擎</h1>
+            <p id="hero-subtitle" class="text-slate-200 text-sm md:text-base max-w-2xl mx-auto mb-6">
+                系统已接入 <span class="font-bold text-yellow-400">Google Gemini </span><br>利用最新AI大模型深度预测2026考研真题
             </p>
 
             <!-- AI Consult -->
-            <div
-                class="max-w-3xl mx-auto bg-white/10 backdrop-blur-md p-6 rounded-xl border border-white/20 shadow-2xl">
-                <div class="text-left mb-3 text-sm font-bold flex items-center text-yellow-200">
-                    <span class="mr-2 text-xl">🆘</span>
-                    <span id="ai-title">Gemini 备考急救室</span>
+            <div class="max-w-2xl mx-auto bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/20 shadow-xl">
+                <div class="text-left mb-2 text-sm font-bold flex items-center text-yellow-200">
+                    <span id="ai-title">备考急救室</span>
                 </div>
-                <div class="flex flex-col sm:flex-row gap-3">
-                    <input type="text" id="user-status" placeholder="输入你的困惑..."
-                        class="flex-grow px-5 py-3 bg-white text-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 text-sm shadow-inner">
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <input type="text" id="user-status" placeholder="输入当下的困惑 (如：心态崩了/线代总是算错)..."
+                        onkeypress="if(event.keyCode===13) generateEmergencyPlan()"
+                        class="flex-grow px-4 py-2 bg-white text-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 text-sm shadow-inner">
                     <button onclick="generateEmergencyPlan()" id="btn-emergency"
-                        class="bg-yellow-500 hover:bg-yellow-600 text-slate-900 px-8 py-3 rounded-lg font-bold transition whitespace-nowrap shadow-lg flex items-center justify-center">
-                        <span>获取建议</span>
+                        class="bg-yellow-500 hover:bg-yellow-600 text-slate-900 px-6 py-2 rounded-lg font-bold transition whitespace-nowrap shadow-lg text-sm">
+                        ✨ 获得建议
                     </button>
                 </div>
                 <div id="emergency-output"
-                    class="hidden mt-4 text-left bg-white text-slate-800 p-5 rounded-lg text-sm prose max-w-none shadow-xl border-l-4 border-yellow-500">
+                    class="hidden mt-3 text-left bg-white text-slate-800 p-4 rounded-lg text-sm prose max-w-none shadow-xl border-l-4 border-yellow-500 relative">
                 </div>
             </div>
         </div>
     </header>
 
-    <main class="container mx-auto px-4 py-8 space-y-16 flex-grow">
+    <main class="container mx-auto px-4 py-6 space-y-12 flex-grow">
 
         <!-- Infinite Prediction Section -->
         <section id="simulation" class="scroll-mt-24">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 gap-4">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 gap-4">
                 <div>
                     <h2 id="section-title"
-                        class="text-3xl font-bold text-slate-800 border-l-8 border-slate-600 pl-4 theme-transition">每日一练
-                        · AI 驱动</h2>
-                    <p id="section-desc" class="text-slate-500 mt-2">双模式：经典必考题(本地) / 2026预测题(AI生成)</p>
+                        class="text-2xl font-bold text-slate-800 border-l-8 border-slate-600 pl-4 theme-transition">2026
+                        预测 · 每日一练</h2>
+                    <p id="section-desc" class="text-slate-500 mt-1 text-sm">选择模块 -> AI命题 -> 冲刺2026</p>
                 </div>
-                <!-- Dynamic Category Buttons -->
-                <div id="category-tabs"
-                    class="flex bg-white p-1 rounded-xl shadow-md border border-slate-200 overflow-x-auto max-w-full">
-                    <!-- Injected via JS -->
+                <div class="flex flex-col gap-2">
+                    <div id="category-tabs"
+                        class="flex justify-between w-full bg-white p-1 rounded-xl shadow-md border border-slate-200">
+                        <!-- Tabs Injected via JS -->
+                    </div>
+                    <!-- Difficulty Controls -->
+                    <div class="flex justify-end space-x-2 mr-1">
+                        <button onclick="setDifficulty('easy')" id="diff-easy"
+                            class="text-xs px-3 py-1 rounded-full border border-green-200 text-green-600 hover:bg-green-50 transition">简单
+                            (打基础)</button>
+                        <button onclick="setDifficulty('medium')" id="diff-medium"
+                            class="text-xs px-3 py-1 rounded-full border border-blue-200 bg-blue-100 text-blue-700 font-bold shadow-sm transition">适中
+                            (标准)</button>
+                        <button onclick="setDifficulty('hard')" id="diff-hard"
+                            class="text-xs px-3 py-1 rounded-full border border-red-200 text-red-600 hover:bg-red-50 transition">困难
+                            (冲刺)</button>
+                    </div>
                 </div>
             </div>
 
             <div
-                class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden flex flex-col md:flex-row min-h-[600px]">
+                class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden flex flex-col md:flex-row min-h-[500px]">
                 <!-- Problem Display -->
-                <div class="w-full md:w-1/2 p-8 bg-slate-50 border-r border-slate-100 flex flex-col relative">
+                <div class="w-full md:w-1/2 p-6 bg-slate-50 border-r border-slate-100 flex flex-col relative">
 
-                    <!-- Control Buttons -->
-                    <div class="absolute top-6 right-6 z-10 flex flex-col items-end gap-2">
-                        <button onclick="loadNextProblem()"
-                            class="flex items-center space-x-2 bg-white border border-slate-200 hover:border-slate-400 hover:bg-slate-50 text-slate-600 px-4 py-2 rounded-full text-xs font-bold shadow-sm transition group">
-                            <span class="text-lg group-hover:rotate-180 transition duration-500">🔄</span>
-                            <span>换一题 (经典)</span>
-                        </button>
-                        <!-- AI Generate Button (Universal) -->
+                    <div class="absolute top-4 right-4 z-10">
                         <button id="btn-ai-gen" onclick="generateAIProblem()"
-                            class="flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-2 rounded-full text-xs font-bold shadow-md hover:shadow-lg transition transform hover:scale-105">
-                            <span>🔮 AI 生成 2026 预测</span>
+                            class="flex items-center space-x-2 bg-gradient-to-r from-slate-700 to-slate-900 text-white px-5 py-2 rounded-full text-sm font-bold shadow-md hover:shadow-lg transition transform hover:scale-105 active:scale-95">
+                            <span>🔮 开始预测</span>
                         </button>
                     </div>
 
-                    <div id="problem-container" class="flex-grow flex flex-col justify-center animate-fade-in"></div>
+                    <div id="problem-container"
+                        class="flex-grow flex flex-col justify-center animate-fade-in text-lg leading-relaxed pt-12">
+                        <!-- Initial State -->
+                        <div class="text-center text-slate-400">
+                            <div class="text-6xl mb-4 opacity-20">🎯</div>
+                            <p>题库已连接 2026 考纲数据库</p>
+                            <p class="text-sm mt-2">点击右上方按钮，获取杨宇欣的专属押题</p>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Solution Area -->
-                <div class="w-full md:w-1/2 p-8 flex flex-col bg-white">
+                <div class="w-full md:w-1/2 p-6 flex flex-col bg-white">
                     <div id="ai-box"
                         class="flex-grow hidden bg-indigo-50 p-5 rounded-xl text-sm mb-4 border border-indigo-100 overflow-y-auto custom-scroll max-h-[400px] prose prose-sm prose-indigo shadow-inner">
                     </div>
                     <div id="static-answer"
                         class="flex-grow hidden bg-white p-6 rounded-xl text-sm text-slate-800 mb-4 overflow-y-auto custom-scroll max-h-[400px] shadow-sm border border-slate-200 leading-relaxed">
                     </div>
+
                     <div id="placeholder"
                         class="flex-grow flex flex-col items-center justify-center text-slate-400 text-center text-sm border-2 border-dashed border-slate-100 rounded-xl mb-4 bg-slate-50/50">
-                        <span class="text-5xl mb-4 opacity-50">✍️</span>
-                        <p class="font-medium text-slate-500">思考是得分的关键。<br>请先构思 / 默背再看解析。</p>
+                        <span class="text-4xl mb-3 opacity-50">✍️</span>
+                        <p class="font-medium text-slate-500">思考是得分的关键。<br>请先构思再看解析。</p>
                     </div>
-                    <div class="grid grid-cols-2 gap-4 mt-auto">
-                        <button onclick="showStaticAnswer()"
-                            class="py-3.5 bg-slate-100 text-slate-700 rounded-xl font-bold text-sm hover:bg-slate-200 transition">查看标准解析</button>
-                        <button onclick="askAiConfidence()" id="btn-ai-help"
-                            class="py-3.5 bg-gradient-to-r from-slate-700 to-slate-900 text-white rounded-xl font-bold text-sm hover:shadow-lg transition flex justify-center items-center theme-btn"><span>✨
-                                AI 深度点拨</span></button>
+
+                    <div class="grid grid-cols-2 gap-3 mt-auto">
+                        <button id="btn-show-ans" onclick="showStaticAnswer()"
+                            class="py-3 bg-slate-100 text-slate-700 rounded-xl font-bold text-sm hover:bg-slate-200 transition opacity-50 cursor-not-allowed"
+                            disabled>查看标准解析</button>
+                        <button id="btn-ai-help" onclick="askAiConfidence()"
+                            class="py-3 bg-gradient-to-r from-slate-700 to-slate-900 text-white rounded-xl font-bold text-sm hover:shadow-lg transition flex justify-center items-center theme-btn opacity-50 cursor-not-allowed"
+                            disabled><span>✨ AI 深度点拨</span></button>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- Mindset Section -->
-        <section id="mindset" class="scroll-mt-24 mb-12">
+        <section id="mindset" class="scroll-mt-24 mb-8">
             <h2 id="mindset-title"
-                class="text-3xl font-bold text-slate-800 border-l-8 border-yellow-500 pl-4 mb-6 theme-transition">信心加油站
+                class="text-2xl font-bold text-slate-800 border-l-8 border-yellow-500 pl-4 mb-4 theme-transition">信心加油站
             </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Confidence Card -->
                 <div id="card-confidence"
-                    class="bg-gradient-to-br from-yellow-500 to-orange-500 rounded-2xl shadow-lg p-8 text-white relative overflow-hidden flex flex-col theme-transition">
+                    class="bg-gradient-to-br from-yellow-500 to-orange-500 rounded-2xl shadow-lg p-6 text-white relative overflow-hidden flex flex-col theme-transition">
                     <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-white opacity-10 rounded-full"></div>
                     <button onclick="loadNextConfidence()"
-                        class="absolute top-6 right-6 bg-white/20 hover:bg-white/30 text-white px-3 py-1 rounded-full text-xs font-bold transition flex items-center backdrop-blur-sm z-10">
-                        <span class="mr-1">🔄</span> 换一句
+                        class="absolute top-4 right-4 bg-white/20 hover:bg-white/30 text-white px-3 py-1 rounded-full text-xs font-bold transition flex items-center backdrop-blur-sm z-10">
+                        换一句
                     </button>
-                    <h3 class="text-2xl font-bold mb-4 flex items-center">
+                    <h3 class="text-xl font-bold mb-3 flex items-center">
                         <span class="mr-2">💪</span> 杨宇欣，你能行！
                     </h3>
                     <div id="confidence-text"
-                        class="text-white/90 font-medium text-lg leading-relaxed mb-6 flex-grow animate-fade-in min-h-[120px]">
+                        class="text-white/90 font-medium text-base leading-relaxed mb-4 flex-grow animate-fade-in min-h-[80px]">
                     </div>
                 </div>
                 <!-- Strategy Card -->
-                <div class="bg-white rounded-2xl shadow-lg border border-slate-100 p-8 flex flex-col relative">
+                <div id="card-strategy"
+                    class="bg-gradient-to-br from-pink-500 to-rose-500 rounded-2xl shadow-lg p-6 text-white relative overflow-hidden flex flex-col theme-transition">
+                    <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-white opacity-10 rounded-full"></div>
                     <button onclick="loadNextStrategy()"
-                        class="absolute top-6 right-6 bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-full text-xs font-bold transition flex items-center">
-                        <span class="mr-1">🔄</span> 换锦囊
+                        class="absolute top-4 right-4 bg-white/20 hover:bg-white/30 text-white px-3 py-1 rounded-full text-xs font-bold transition flex items-center backdrop-blur-sm z-10">
+                        换锦囊
                     </button>
-                    <h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center">
-                        <span class="mr-2 text-red-500">❤️</span> 考前心里话
+                    <h3 class="text-xl font-bold mb-3 flex items-center">
+                        <span class="mr-2">❤️</span> 考前心里话
                     </h3>
-                    <div id="strategy-list" class="space-y-4 animate-fade-in"></div>
+                    <div id="strategy-text"
+                        class="text-white/90 font-medium text-base leading-relaxed mb-4 flex-grow animate-fade-in min-h-[80px]">
+                    </div>
                 </div>
             </div>
         </section>
 
     </main>
 
-    <footer class="bg-slate-900 text-slate-500 py-8 text-center text-sm">
-        <p class="mb-2 text-slate-400">祝 杨宇欣同学 <span class="text-yellow-500 font-bold">金榜题名 · 一战成硕</span></p>
-        <p class="opacity-60 text-xs">2026 Postgraduate Entrance Exam Infinite System</p>
+    <footer class="bg-slate-900 text-slate-500 py-6 text-center text-xs">
+        <p class="mb-1 text-slate-400">祝 杨宇欣同学 <span class="text-yellow-500 font-bold">金榜题名 · 一战成硕</span></p>
+        <div class="flex justify-center items-center space-x-2 opacity-50">
+            <span>Powered by Google Gemini</span>
+            <span>·</span>
+            <button onclick="clearApiKey()" class="hover:text-slate-300 underline">重置 Key</button>
+        </div>
     </footer>
+
+    <!-- API Key Modal -->
+    <div id="api-modal"
+        class="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center transform transition-all scale-100">
+            <div class="text-4xl mb-4">🔑</div>
+            <h3 class="text-xl font-bold text-slate-800 mb-2">开启冲刺引擎</h3>
+            <p class="text-slate-500 text-sm mb-6">请输入您的 Google Gemini API Key 以激活专属预测系统。<br>Key 将仅保存在您的本地浏览器中。</p>
+            <input type="password" id="input-api-key" placeholder="粘贴 API Key (AIzaSy...)"
+                class="w-full px-4 py-3 border border-slate-200 rounded-lg mb-4 focus:ring-2 focus:ring-indigo-500 outline-none text-center font-mono text-sm">
+            <button onclick="saveApiKey()"
+                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg transition shadow-lg">
+                确认激活
+            </button>
+            <p class="mt-4 text-xs text-slate-400">还没有 Key? <a href="https://aistudio.google.com/app/apikey"
+                    target="_blank" class="text-indigo-500 underline">去申请一个 (免费)</a></p>
+        </div>
+    </div>
 
     <script>
         // --- 1. CONFIGURATION ---
-        const apiKey = "AIzaSyAe0BZJvAsCSYcIyxENDiU-N-6yN6vLIiM"; // 请在此处填入您的 API Key
+        let apiKey = localStorage.getItem("gemini_api_key") || "";
 
-        // --- 2. STATIC PROBLEM BANK (FAST LOAD) ---
+        // --- 2. CONFIG DATA ---
         const subjects = {
             'math': {
                 name: "数学",
                 color: "slate",
-                aiRole: "考研数学出题组长",
-                categories: [{ id: 'calc', name: '高数' }, { id: 'alg', name: '线代' }, { id: 'prob', name: '概率' }],
-                placeholder: "数学困惑 (e.g. 级数收敛判定)...",
-                problemBank: {
-                    'calc': [{ title: "分部积分循环", content: "计算不定积分 I = ∫ e^{2x} · cos(3x) dx", answer: "核心：两次分部后移项。结果 I = (1/13)e^{2x}(2cos3x+3sin3x)+C" }],
-                    'alg': [{ title: "伴随矩阵秩", content: "3阶矩阵 r(A)=1，求 r(A*)", answer: "公式：更低伴随零。r(A*)=0" }],
-                    'prob': [{ title: "最大值分布", content: "Z=max(X,Y)，独立同分布，求F(z)", answer: "结果 [F(z)]^2" }]
-                }
+                aiRole: "考研数学一命题组组长",
+                categories: [{ id: 'calc', name: '高数' }, { id: 'alg', name: '线代' }, { id: 'prob', name: '概率论' }],
+                placeholder: "数学困惑 (e.g. 级数收敛判定)..."
             },
             'eng': {
                 name: "英语",
                 color: "indigo",
-                aiRole: "考研英语审题专家",
-                categories: [{ id: 'vocab', name: '核心·词汇' }, { id: 'read', name: '阅读·逻辑' }, { id: 'write', name: '写作·话题' }],
-                placeholder: "英语困惑 (e.g. 作文没思路)...",
-                problemBank: {
-                    'vocab': [{ title: "Vocab Check", content: "Plausible", answer: "adj. 貌似可信的" }],
-                    'read': [{ title: "态度题陷阱", content: "Indifferent 是正确选项吗？", answer: "几乎必错。作者不会漠不关心。" }],
-                    'write': [{ title: "科技类开头", content: "背诵科技双刃剑开头", answer: "The past few years have witnessed..." }]
-                }
+                aiRole: "考研英语一命题组组长",
+                categories: [{ id: 'vocab', name: '词汇' }, { id: 'read', name: '阅读' }, { id: 'write', name: '写作' }],
+                placeholder: "英语困惑 (e.g. 作文没思路)..."
             },
             'pol': {
                 name: "政治",
                 color: "rose",
-                aiRole: "考研政治阅卷组长",
-                categories: [{ id: 'marx', name: '马原·分析' }, { id: 'mao', name: '毛中特·热词' }, { id: 'curr', name: '时政·押题' }],
-                placeholder: "政治困惑 (e.g. 唯物史观)...",
-                problemBank: {
-                    'marx': [{ title: "新质生产力", content: "用唯物史观分析新质生产力", answer: "生产力决定生产关系。科技革命推动高质量发展。" }],
-                    'mao': [{ title: "中国式现代化", content: "本质要求口诀？", answer: "党领社，高发全，文人共，人自命。" }],
-                    'curr': [{ title: "改革总目标", content: "完善制度，推进治理现代化", answer: "二十届三中全会考点。" }]
-                }
+                aiRole: "考研政治命题组组长",
+                categories: [{ id: 'marx', name: '马原' }, { id: 'mao', name: '毛中特' }, { id: 'history', name: '史纲' }, { id: 'ethics', name: '思修法基' }, { id: 'curr', name: '时政&当代' }],
+                placeholder: "政治困惑 (e.g. 唯物史观)..."
             }
         };
 
         // --- 3. STATE ---
         let currentSubject = 'math';
         let currentCategory = '';
-        let currentProblemIndex = 0;
+        let currentDifficulty = 'medium'; // easy, medium, hard
         let confIdx = 0;
         let stratIdx = 0;
 
         // --- 4. DATASETS ---
-        const confidenceMsgs = ["“杨宇欣，你在这个冬天积蓄的力量，必将在试卷上绽放光芒！”", "“不要慌张，沉着冷静，一题一题攻克，硕果终将属于你。”", "“乾坤未定，你我皆是黑马。加油！”", "“行百里者半九十，坚持住！”"];
-        const strategySets = [[{ title: "专注", text: "只关注当下的题目。" }, { title: "舍得", text: "遇难则过。" }], [{ title: "细心", text: "检查填涂卡。" }, { title: "书写", text: "字迹工整得卷面分。" }]];
+        const confidenceMsgs = [
+            "“杨宇欣，你在这个冬天积蓄的力量，必将在试卷上绽放光芒！”",
+            "“不要慌张，沉着冷静，一题一题攻克，硕果终将属于你。”",
+            "“乾坤未定，你我皆是黑马。杨宇欣，加油！”",
+            "“行百里者半九十，坚持住，胜利就在眼前！”",
+            "“相信自己，杨宇欣，你背过的书、刷过的题，都不会白费。”",
+            "“杨宇欣，星光不问赶路人，时光不负有心人。”",
+            "“现在的焦虑只是因为你想变得更好，接纳它，然后战胜它，杨宇欣。”",
+            "“考试只是一个查漏补缺的过程，你会的远比你以为的多。”",
+            "“杨宇欣，不必焦虑明天，只专注于当下的每一个知识点。”",
+            "“你手中的笔，就是你披荆斩棘的剑。杨宇欣，去战斗吧！”",
+            "“无论结果如何，杨宇欣，那个在寒冬中坚持晨读的你，已经是英雄。”",
+            "“深呼吸，放轻松。杨宇欣，你的潜能超乎你的想象。”",
+            "“那些看似不起眼的日复一日，终会在发榜那天让你看到坚持的意义。”",
+            "“杨宇欣，不要去想对手有多强，你的对手只有昨天的自己。”",
+            "“保持平常心，杨宇欣，把考场当作平时的书桌，你一定行。”",
+            "“杨宇欣，愿你在合上笔盖的那一刻，有战士收刀入鞘的骄傲。”",
+            "“这一路走来不容易，杨宇欣，给自己一个大大的拥抱，你辛苦了。”",
+            "“杨宇欣，调整呼吸，专注脚下，山顶的风景正在等你。”",
+            "“所有的运气都藏在你的努力里，杨宇欣，好运正在向你狂奔而来。”",
+            "“杨宇欣，去发光吧，不仅是为了梦想，更是为了那个不曾放弃的自己。”"
+        ];
+
+        const strategySets = [
+            [{ title: "专注", text: "杨宇欣，只关注当下的题目，不要想结果。" }, { title: "舍得", text: "遇难则过，3分钟没思路果断跳过。" }],
+            [{ title: "细心", text: "交卷前检查填涂卡，这是送分题。" }, { title: "书写", text: "字迹工整，尤其是作文和政治，有卷面分。" }],
+            [{ title: "节奏", text: "按部就班，稳扎稳打，不要被别人打乱。" }, { title: "心态", text: "我难人亦难，淡定拿分，不要慌。" }],
+            [{ title: "睡眠", text: "睡前不看手机，保证7小时高质量睡眠。" }, { title: "早起", text: "生物钟调到早上8点兴奋，适应考试时间。" }],
+            [{ title: "饮食", text: "清淡为主，少吃生冷油腻，保护肠胃。" }, { title: "保暖", text: "考场可能冷，多带一件衣服备用。" }],
+            [{ title: "证件", text: "身份证准考证多打几份，分开放。" }, { title: "文具", text: "笔芯带足，涂卡笔多备一支，有备无患。" }],
+            [{ title: "呼吸", text: "紧张时深呼吸5秒，告诉自己“我能行”。" }, { title: "暗示", text: "杨宇欣，你是最棒的，相信自己！" }],
+            [{ title: "复习", text: "最后几天回归基础，不再做新难题。" }, { title: "错题", text: "多看错题本，避免重复犯错。" }],
+            [{ title: "屏蔽", text: "不听小道消息，不和别人比进度。" }, { title: "专注", text: "你的世界只有你和那张卷子。" }],
+            [{ title: "背诵", text: "政治大题和英语作文模板，滚瓜烂熟。" }, { title: "公式", text: "数学常用公式考前再默写一遍。" }],
+            [{ title: "午休", text: "中午小睡30分钟，下午考试更清醒。" }, { title: "放松", text: "考完一科忘一科，不要对答案。" }],
+            [{ title: "审题", text: "题目看两遍，圈出关键词，防止看错。" }, { title: "步骤", text: "大题步骤写清楚，踩点得分。" }],
+            [{ title: "草稿", text: "草稿纸分区使用，标好题号，方便检查。" }, { title: "计算", text: "简单计算也要动笔，防止口算失误。" }],
+            [{ title: "跳过", text: "卡住了别死磕，先做后面的，回头再看。" }, { title: "抢分", text: "能拿的分一分不丢，难的题争取步骤分。" }],
+            [{ title: "鼓励", text: "杨宇欣，你已经坚持到了最后，这就是胜利。" }, { title: "平常", text: "这就是一次普通的练习，只不过换了个地方。" }],
+            [{ title: "预案", text: "遇到突发情况找监考老师，不要自己慌。" }, { title: "时间", text: "戴好手表，掌控好做题速度。" }],
+            [{ title: "喝水", text: "考前少喝水，避免考试中途想上厕所。" }, { title: "糖果", text: "带块巧克力，考前补充能量。" }],
+            [{ title: "入场", text: "提前到达考场，熟悉环境，平复心情。" }, { title: "闭目", "text": "发卷前闭目养神，在脑海里过一遍知识框架。" }],
+            [{ title: "填空", text: "数学填空题算完立刻填，防止最后来不及。" }, { title: "选择", text: "英语阅读相信第一直觉，改错率通常很高。" }],
+            [{ title: "结束", text: "最后一科考完，给自己一个大大的微笑。" }, { title: "未来", text: "杨宇欣，未来可期，美好在前头等你。" }]
+        ];
 
         // --- 5. LOGIC ---
         function switchSubject(subj) {
@@ -346,14 +453,17 @@
             const config = subjects[subj];
 
             // UI Updates
-            ['math', 'eng', 'pol'].forEach(s => document.getElementById(`nav-${s}`).className = s === subj ? "px-3 py-1 text-xs font-bold rounded transition bg-white text-slate-900 shadow" : "px-3 py-1 text-xs font-bold rounded transition hover:bg-white/20 text-white");
+            // Subject buttons are now in the mindset section, so no navbar update here.
 
             const themes = {
-                math: { nav: "bg-slate-900", hero: "from-slate-900 to-slate-800", text: "text-slate-800", border: "border-slate-600", btn: "bg-yellow-500 hover:bg-yellow-600" },
-                eng: { nav: "bg-indigo-900", hero: "from-indigo-900 to-purple-900", text: "text-slate-800", border: "border-indigo-600", btn: "bg-purple-500 hover:bg-purple-600" },
-                pol: { nav: "bg-red-900", hero: "from-red-900 to-rose-900", text: "text-slate-800", border: "border-red-600", btn: "bg-rose-500 hover:bg-rose-600" }
+                math: { nav: "bg-slate-900", hero: "from-slate-900 to-slate-800", text: "text-slate-800", border: "border-slate-600", btn: "bg-yellow-500 hover:bg-yellow-600", aiBtn: "from-slate-700 to-slate-900", badge: "bg-amber-500", ansT: "text-amber-500" },
+                eng: { nav: "bg-indigo-900", hero: "from-indigo-900 to-purple-900", text: "text-slate-800", border: "border-indigo-600", btn: "bg-purple-500 hover:bg-purple-600", aiBtn: "from-indigo-600 to-purple-600", badge: "bg-purple-600", ansT: "text-purple-600" },
+                pol: { nav: "bg-red-900", hero: "from-red-900 to-rose-900", text: "text-slate-800", border: "border-red-600", btn: "bg-rose-500 hover:bg-rose-600", aiBtn: "from-red-700 to-rose-700", badge: "bg-red-600", ansT: "text-red-600" }
             };
             const t = themes[subj];
+
+            // Re-render Difficulty UI for Theme Consistency if needed (optional, keeping neutral colors for simplicity)
+            updateDifficultyUI();
 
             document.getElementById('navbar').className = `text-white shadow-lg sticky top-0 z-50 theme-transition ${t.nav}`;
             document.getElementById('hero-section').className = `relative text-white py-12 theme-transition bg-gradient-to-b ${t.hero}`;
@@ -361,11 +471,23 @@
             document.getElementById('btn-emergency').className = `${t.btn} text-slate-900 px-8 py-3 rounded-lg font-bold transition shadow-lg flex items-center justify-center`;
             if (subj !== 'math') document.getElementById('btn-emergency').classList.replace('text-slate-900', 'text-white');
 
+            // Update Generate Button Style
+            const genBtn = document.getElementById('btn-ai-gen');
+            genBtn.className = `flex items-center space-x-2 bg-gradient-to-r ${t.aiBtn} text-white px-5 py-2 rounded-full text-sm font-bold shadow-md hover:shadow-lg transition transform hover:scale-105 active:scale-95`;
+
             document.getElementById('user-status').placeholder = config.placeholder;
-            document.getElementById('ai-title').innerText = config.aiRole;
 
             const tabs = document.getElementById('category-tabs');
-            tabs.innerHTML = config.categories.map(c => `<button onclick="changeCategory('${c.id}')" id="tab-${c.id}" class="text-sm px-4 py-2.5 rounded-lg font-bold transition whitespace-nowrap text-slate-600 hover:bg-slate-100">${c.name}</button>`).join('');
+            const activeClass = currentSubject === 'math' ? 'bg-slate-800 text-white shadow-md' : currentSubject === 'eng' ? 'bg-indigo-800 text-white shadow-md' : 'bg-red-800 text-white shadow-md';
+            const baseClass = 'text-slate-600 hover:bg-slate-100';
+
+            tabs.innerHTML = config.categories.map(c => {
+                const isActive = c.id === currentCategory;
+                // Add flex-1 to make each button expand to fill space, AND restore ID for click handler
+                return `<button onclick="changeCategory('${c.id}')" id="tab-${c.id}"
+                class="flex-1 px-4 py-2 rounded-lg text-sm font-bold transition whitespace-nowrap ${isActive ? activeClass : baseClass}">
+                ${c.name}</button>`;
+            }).join('');
 
             changeCategory(config.categories[0].id);
         }
@@ -375,30 +497,59 @@
             subjects[currentSubject].categories.forEach(c => {
                 const btn = document.getElementById(`tab-${c.id}`);
                 const activeColor = currentSubject === 'math' ? 'bg-slate-800' : currentSubject === 'eng' ? 'bg-indigo-800' : 'bg-red-800';
-                btn.className = c.id === id ? `text-sm px-4 py-2.5 rounded-lg font-bold whitespace-nowrap ${activeColor} text-white shadow-md` : "text-sm px-4 py-2.5 rounded-lg font-bold whitespace-nowrap text-slate-600 hover:bg-slate-100";
+                // RE-APPLY flex-1 to ensure layout doesn't break on switch
+                if (btn) btn.className = c.id === id ? `flex-1 px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap ${activeColor} text-white shadow-md transition` : "flex-1 px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap text-slate-600 hover:bg-slate-100 transition";
             });
-            loadNextProblem(true);
+            // Reset view
+            document.getElementById('problem-container').innerHTML = `<div class="text-center text-slate-400 h-full flex flex-col justify-center items-center"><div class="text-4xl mb-2">✨</div><p>模块已切换，请点击“开始预测”</p></div>`;
+            document.getElementById('ai-box').classList.add('hidden');
+            document.getElementById('static-answer').classList.add('hidden');
+            document.getElementById('placeholder').classList.remove('hidden');
+            disableButtons(true);
         }
 
-        function loadNextProblem(reset = false) {
-            const list = subjects[currentSubject].problemBank[currentCategory];
-            if (reset) currentProblemIndex = Math.floor(Math.random() * list.length);
-            else currentProblemIndex = (currentProblemIndex + 1) % list.length;
-
-            renderProblem(list[currentProblemIndex].title, list[currentProblemIndex].content, list[currentProblemIndex].answer, false);
+        function disableButtons(disabled) {
+            const b1 = document.getElementById('btn-show-ans');
+            const b2 = document.getElementById('btn-ai-help');
+            if (disabled) {
+                b1.classList.add('opacity-50', 'cursor-not-allowed'); b1.disabled = true;
+                b2.classList.add('opacity-50', 'cursor-not-allowed'); b2.disabled = true;
+            } else {
+                b1.classList.remove('opacity-50', 'cursor-not-allowed'); b1.disabled = false;
+                b2.classList.remove('opacity-50', 'cursor-not-allowed'); b2.disabled = false;
+            }
         }
 
-        function renderProblem(title, content, answer, isAI) {
+        function cleanAIOutput(text) {
+            if (!text) return "";
+            // Remove markdown bold (**text**)
+            let cleaned = text.replace(/\*\*/g, '');
+            // Remove potential markdown code blocks if AI wraps HTML in them
+            cleaned = cleaned.replace(/```html/g, '').replace(/```/g, '');
+            return cleaned;
+        }
+
+        async function renderProblem(title, content, answer) {
             const container = document.getElementById('problem-container');
-            container.classList.remove('fade-in'); void container.offsetWidth; container.classList.add('fade-in');
+            const ansBox = document.getElementById('static-answer');
+
+            // 1. Opcity 0 to hide raw content
+            container.classList.remove('fade-in');
+            container.classList.add('opacity-0', 'transition-opacity');
+            ansBox.classList.add('opacity-0', 'transition-opacity');
+
+            // 2. Clean Content
+            title = cleanAIOutput(title);
+            content = cleanAIOutput(content);
+            answer = cleanAIOutput(answer);
 
             let badgeClass = currentSubject === 'eng' ? "bg-purple-600" : currentSubject === 'pol' ? "bg-red-600" : "bg-amber-500";
-            let badgeText = isAI ? "🔮 AI 2026 预测" : "📝 经典母题";
-            let animate = isAI ? "animate-pulse" : "";
+            let ansColor = currentSubject === 'eng' ? "text-purple-600" : currentSubject === 'pol' ? "text-red-600" : "text-amber-500";
 
+            // 3. Inject Content
             container.innerHTML = `
                 <div class="mb-6">
-                    <span class="text-xs font-bold text-white ${badgeClass} px-2.5 py-1 rounded shadow-sm ${animate}">${badgeText}</span>
+                    <span class="text-xs font-bold text-white ${badgeClass} px-2.5 py-1 rounded shadow-sm animate-pulse">🔮 2026 考研预测</span>
                     <span class="text-sm font-bold text-slate-500 uppercase tracking-widest ml-2">${title}</span>
                 </div>
                 <div class="text-lg leading-relaxed text-slate-800 font-medium">${content}</div>
@@ -408,12 +559,26 @@
             document.getElementById('static-answer').classList.add('hidden');
             document.getElementById('placeholder').classList.remove('hidden');
 
-            // Store answer for button click
-            const ansBox = document.getElementById('static-answer');
-            let ansColor = currentSubject === 'eng' ? "text-purple-600" : currentSubject === 'pol' ? "text-red-600" : "text-amber-500";
-            ansBox.innerHTML = `<h4 class="${ansColor} font-bold mb-4 text-xs uppercase tracking-wide border-b border-slate-100 pb-2">解析 / Analysis</h4>${answer}`;
+            ansBox.innerHTML = `<h4 class="${ansColor} font-bold mb-4 text-xs uppercase tracking-wide border-b border-slate-100 pb-2">完整解析 / Full Analysis</h4>${answer}`;
 
-            if (window.MathJax) MathJax.typesetPromise();
+            disableButtons(false);
+
+            // 4. Render MathJax & Reveal
+            if (window.MathJax) {
+                try {
+                    await MathJax.typesetPromise([container, ansBox]);
+                } catch (err) {
+                    console.error('MathJax Error:', err);
+                }
+            }
+            // 5. Reveal smoothly
+            requestAnimationFrame(() => {
+                container.classList.remove('opacity-0');
+                container.classList.add('opacity-100');
+                // Answer box remains hidden until button click, but its content is ready
+                ansBox.classList.remove('opacity-0');
+                ansBox.classList.add('opacity-100');
+            });
         }
 
         function showStaticAnswer() {
@@ -422,9 +587,12 @@
             document.getElementById('static-answer').classList.remove('hidden');
         }
 
-        // --- 6. AI CORE GENERATION ---
+        // --- 6. AI CORE GENERATION (PROMPT ENGINEERED) ---
         async function callGemini(prompt) {
-            if (!apiKey) { alert("请填入 API Key"); return null; }
+            if (!apiKey) {
+                checkApiKey(); // Trigger modal
+                return null;
+            }
             try {
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
                     method: 'POST',
@@ -436,81 +604,241 @@
             } catch (e) { console.error(e); return null; }
         }
 
-        // The Ultimate Generator
         async function generateAIProblem() {
             const btn = document.getElementById('btn-ai-gen');
             const container = document.getElementById('problem-container');
 
             btn.disabled = true;
-            btn.innerHTML = `<span class="spinner mr-2"></span> 出题中...`;
-            container.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-slate-400"><div class="spinner border-slate-400 border-t-slate-600 mb-4"></div><p>Gemini 正在分析 2026 命题趋势...</p></div>`;
+            btn.innerHTML = `<span class="spinner mr-2"></span> 命题中...`;
+            container.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-slate-400"><div class="spinner border-slate-400 border-t-slate-600 mb-4"></div><p>Gemini 正在根据【${getDiffName()}】模式生成试题...</p></div>`;
             document.getElementById('static-answer').classList.add('hidden');
             document.getElementById('placeholder').classList.remove('hidden');
+            disableButtons(true);
 
             const subConfig = subjects[currentSubject];
             const catName = subConfig.categories.find(c => c.id === currentCategory).name;
 
-            // Dynamic Prompt Construction
-            let prompt = "";
-            if (currentSubject === 'math') {
-                prompt = `请作为考研数学出题专家，针对【数学一 · ${catName}】模块，生成一道**2026年极大概率会出现的预测题**（难度中等偏上）。
-                要求：
-                1. 题目要有具体的数学公式（使用LaTeX格式，但不要用$包裹，直接写公式）。
-                2. 必须是具体计算或证明题，不是概念问答。
-                3. 请严格按照以下格式返回HTML代码（不要Markdown标记）：
-                DIV_START
-                TITLE: {简短题名}
-                CONTENT: {题目内容 HTML}
-                ANSWER: {详细解析步骤 HTML，包含核心考点说明}
-                DIV_END`;
-            } else if (currentSubject === 'eng') {
-                prompt = `请作为考研英语出题专家，针对【英语一 · ${catName}】模块，生成一道2026预测题。
-                如果是词汇：随机选一个大纲高频难词。
-                如果是阅读：生成一段简短的学术文章（3句左右）和一个最具迷惑性的选择题。
-                如果是写作：生成一个预测话题。
-                请严格按照以下格式返回HTML代码（不要Markdown标记）：
-                DIV_START
-                TITLE: {题名}
-                CONTENT: {题目内容 HTML}
-                ANSWER: {详细解析/范文 HTML}
-                DIV_END`;
-            } else {
-                prompt = `请作为考研政治名师，结合2025-2026最新时政（如二十届三中全会、新质生产力等），针对【政治 · ${catName}】模块，生成一道预测题。
-                请严格按照以下格式返回HTML代码（不要Markdown标记）：
-                DIV_START
-                TITLE: {题名}
-                CONTENT: {题目内容 HTML}
-                ANSWER: {详细解析 HTML，包含背诵口诀}
-                DIV_END`;
-            }
+            // --- 6. AI CORE GENERATION (DYNAMIC DIFFICULTY) ---
+            const prompt = getPromptByDifficulty(currentSubject, catName, currentDifficulty);
 
             const text = await callGemini(prompt);
 
             if (text) {
                 try {
-                    const title = text.split('TITLE:')[1].split('CONTENT:')[0].trim();
-                    const content = text.split('CONTENT:')[1].split('ANSWER:')[0].trim();
-                    const answer = text.split('ANSWER:')[1].split('DIV_END')[0].trim();
-                    renderProblem(title, content, answer, true);
+                    // ROBUST PARSING (Regex) - Fixes "Generation Failed" issues
+                    const clean = text.replace(/```(html)?/g, '').trim();
+
+                    const titleMatch = clean.match(/TITLE:\s*([\s\S]*?)\s*CONTENT:/i);
+                    const contentMatch = clean.match(/CONTENT:\s*([\s\S]*?)\s*ANSWER:/i);
+                    const answerMatch = clean.match(/ANSWER:\s*([\s\S]*?)\s*(DIV_END|$)/i);
+
+                    if (titleMatch && contentMatch && answerMatch) {
+                        renderProblem(titleMatch[1].trim(), contentMatch[1].trim(), answerMatch[1].trim());
+                    } else {
+                        throw new Error("AI output missing required tags (TITLE/CONTENT/ANSWER)");
+                    }
                 } catch (e) {
-                    container.innerHTML = `<p class="text-red-500 text-center">生成解析失败，请重试。</p>`;
+                    console.error(e);
+                    // Show raw output for debugging if parsing fails
+                    console.log("Raw AI Output:", text);
+                    container.innerHTML = `<p class="text-red-500 text-center">生成失败（解析错误）。</p>
+                    <div class="text-left text-xs text-slate-400 mt-2 p-2 bg-slate-100 rounded overflow-auto max-h-32">
+                        <p class="font-bold">调试信息：</p>
+                        ${e.message}
+                    </div>`;
                 }
             } else {
                 container.innerHTML = `<p class="text-red-500 text-center">网络请求失败。</p>`;
             }
 
             btn.disabled = false;
-            btn.innerHTML = `<span>🔮 AI 生成 2026 预测</span>`;
+            btn.innerHTML = `<span>🔮 开始预测</span>`;
         }
 
-        // Emergency & Confidence (Same logic)
+        // --- DIFFICULTY LOGIC ---
+        function setDifficulty(level) {
+            currentDifficulty = level;
+            updateDifficultyUI();
+        }
+
+        function getDiffName() {
+            return currentDifficulty === 'easy' ? '基础' : currentDifficulty === 'hard' ? '地狱' : '标准';
+        }
+
+        function updateDifficultyUI() {
+            const map = { easy: 'diff-easy', medium: 'diff-medium', hard: 'diff-hard' };
+            const colors = {
+                easy: 'bg-green-100 text-green-700 font-bold shadow-sm',
+                medium: 'bg-blue-100 text-blue-700 font-bold shadow-sm',
+                hard: 'bg-red-100 text-red-700 font-bold shadow-sm'
+            };
+            const borders = {
+                easy: 'border-green-200 text-green-600 hover:bg-green-50',
+                medium: 'border-blue-200 text-blue-600 hover:bg-blue-50',
+                hard: 'border-red-200 text-red-600 hover:bg-red-50'
+            };
+
+            // Reset all
+            Object.keys(map).forEach(k => {
+                const btn = document.getElementById(map[k]);
+                if (btn) btn.className = `text-xs px-3 py-1 rounded-full border transition ${k === currentDifficulty ? colors[k] : borders[k]}`;
+            });
+        }
+
+        function getPromptByDifficulty(subject, catName, diff) {
+            const mathTypes = ['选择题', '填空题', '解答题'];
+            const polTypes = ['单选题', '多选题', '材料分析题'];
+
+            // STRICT FORMAT ENFORCEMENT
+            const FORMAT_SUFFIX = `
+            
+            **CRITICAL OUTPUT RULE (Follow Strictly)**:
+            1. Output ONLY the raw format below. NO conversational text (e.g. "Sure, here is...").
+            2. Do NOT use markdown code blocks (\`\`\`html).
+            3. Structure:
+            DIV_START
+            TITLE: {Title}
+            CONTENT: {Problem HTML}
+            ANSWER: {Analysis HTML}
+            DIV_END
+            
+            **Example**:
+            DIV_START
+            TITLE: 极限计算
+            CONTENT: <p>Calculate lim...</p>
+            ANSWER: <p>Step 1...</p>
+            DIV_END
+            `;
+
+            // --- MATH ---
+            if (subject === 'math') {
+                const qType = mathTypes[Math.floor(Math.random() * mathTypes.length)];
+                let spec = "";
+                if (diff === 'easy') {
+                    spec = `
+                    **命题宗旨（简单模式·夯实基础）**：
+                    1. **直接考察**：不要拐弯抹角，直接考察 ${catName} 的核心公式或定义。
+                    2. **难度系数**：0.5。计算量小，步骤少，一眼能看出思路。
+                    3. **题型**：倾向于基础概念辨析或简单的计算。
+                    4. **反馈**：目的复习公式。`;
+                } else if (diff === 'hard') {
+                    spec = `
+                    **命题宗旨（困难模式·地狱反套路）**：
+                    1. **反直觉**：设置一个看似可以用常规技巧（如洛必达、奇偶性），实则是陷阱的选项或条件。
+                    2. **多点串联**：要求把 ${catName} 与其他冷门章节（如差分方程、物理应用）结合，但必须在考纲内。
+                    3. **难度系数**：0.8。计算量大，或者思路极其隐蔽。
+                    4. **特征**：模拟偶数年较难的压轴题。`;
+                } else { // Medium
+                    spec = `
+                    **命题宗旨（适中模式·标准真题）**：
+                    1. **正统**：考察核心定义和通法通则，不要出偏题。
+                    2. **难度系数**：0.65。标准真题难度，计算量适中，侧重考察解题规范。
+                    3. **特征**：中规中矩，考察硬实力。`;
+                }
+
+                return `你现在是**2026考研数学一命题组组长**。针对【${catName}】出题。
+                **核心指令**：参考近几年的真题和模拟题，预测出一道关于该知识的**2026考研最可能会出的真题**。
+                **出题习惯**：题目风格、陷阱设置、计算量必须严格符合考研数学一的命题习惯。
+                ${spec}
+                **要求**：
+                - 题型：${qType}
+                - 格式：LaTeX公式用$和$$。严禁Markdown加粗。
+                ${FORMAT_SUFFIX}`;
+            }
+
+            // --- ENGLISH ---
+            if (subject === 'eng') {
+                if (currentCategory === 'vocab') {
+                    const level = diff === 'easy' ? "basic core word" : diff === 'hard' ? "polysemous/confusing word" : "high-frequency core word";
+                    return `Task: Pick ONE **${level}** from NETEM vocabulary.
+                    **Constraint**:
+                    1. **TITLE**: Must be **ONE English word only** in **lowercase**. No punctuation.
+                    2. **CONTENT**: Display the word (Large font) and phonetic symbol.
+                    3. **ANSWER**: Chinese definition, usage examples from real exams, and memory tips.
+                    ${FORMAT_SUFFIX}`;
+                }
+                if (currentCategory === 'read') {
+                    let source = diff === 'hard' ? "The Economist (satirical/complex)" : "Scientific American/Nature (clearer structure)";
+                    return `Task: Simulate a **REAL 2026 NETEM English Reading Comprehension (Part A)** text.
+                    **Requirements**:
+                    1. **Source Material**: Adapt a recent article (2024-2025) from *${source}*.
+                    2. **Length**: Strictly **350-400 words** (Standard NETEM length).
+                    3. **Questions**: Generate **5 Multiple Choice Questions** (Standard NETEM format).
+                       - Q1: Main Idea / Specific Detail
+                       - Q2: Inference / Semantics
+                       - Q3: Detail / Logic
+                       - Q4: Author's Attitude
+                       - Q5: Title / Conclusion
+                    4. **Language**: Article and Questions must be **STRICTLY IN ENGLISH**.
+                    5. **Answer**: Provide the correct option keys (e.g., 1.A 2.C...) and brief Chinese analysis for each.
+                    ${FORMAT_SUFFIX}`;
+                }
+                // Writing
+                const isSmallComposition = Math.random() > 0.5;
+                if (isSmallComposition) {
+                    return `Task: Design a **2026 NETEM English (Part A) - Small Composition** prediction.
+                    **Context**: Practical Writing (Letter/Notice).
+                    **Topic**: A relevant scenario for 2026 (e.g., Resignation, Recommendation, Apology regarding AI tool usage, or Traditional Festival invitation).
+                    **Requirements**:
+                    1. **Format**: Standard "Directions: Write a letter/notice..." (approx. 100 words).
+                    2. **Language**: Prompt must be **STRICTLY IN ENGLISH**.
+                    3. **Answer**: Provide a high-score sample text.
+                    ${FORMAT_SUFFIX}`;
+                } else {
+                    return `Task: Design a **2026 NETEM English (Part B) - Big Composition** prediction.
+                    **Context**: Based on 2026 trends.
+                    **Topic**: ${diff === 'hard' ? 'Civilization/Technology Conflict' : 'Personal Quality (Persistence/Innovation)'}.
+                    **Requirements**:
+                    1. **Format**: Standard NETEM Chart/Cartoon essay prompt.
+                       "Directions: Write an essay of 160-200 words based on the drawing/chart below..."
+                    2. **Language**: Prompt must be **STRICTLY IN ENGLISH**. Describe the chart/drawing in text format within the prompt.
+                    3. **Answer**: Provide a high-score sample text.
+                    ${FORMAT_SUFFIX}`;
+                }
+            }
+
+            // --- POLITICS ---
+            if (subject === 'pol') {
+                const qType = polTypes[Math.floor(Math.random() * polTypes.length)];
+                let spec = "";
+                if (diff === 'easy') {
+                    spec = "考察最基本的概念（如'根本保证'是谁），干扰项很容易排除。";
+                } else if (diff === 'hard') {
+                    spec = "考察细微提法区别（如'决定性'vs'基础性'），干扰项极具迷惑性。";
+                } else {
+                    spec = "考察核心考点，干扰项需要掌握一定的基础知识才可排除。";
+                }
+                return `你现在是**考研政治命题组组长**。结合2025年的时政，针对【${catName}】出题。
+                **核心指令**：参考近几年的真题和模拟题，预测出一道关于该知识的**2026考研最可能会出的真题**。
+                **出题习惯**：选项干扰性、命题角度必须严格符合考研政治的命题习惯。
+                **难度**：${spec}
+                **题型**：${qType}
+                严禁Markdown加粗。
+                ${FORMAT_SUFFIX}`;
+            }
+            return "";
+        }
+
         async function generateEmergencyPlan() {
             const status = document.getElementById('user-status').value;
             if (!status) return;
             const output = document.getElementById('emergency-output');
-            output.classList.remove('hidden'); output.innerHTML = "思考中...";
-            const txt = await callGemini(`你是暖心学长。考生杨宇欣考前7天遇到：${status}。给3条简短建议。`);
-            output.innerHTML = marked.parse(txt);
+            output.classList.remove('hidden');
+            output.innerHTML = `<div class="flex items-center justify-center text-slate-500"><span class="spinner mr-2"></span> 正在为您开具处方...</div>`;
+
+            const subName = currentSubject === 'math' ? '数学一' : currentSubject === 'eng' ? '英语一' : '政治';
+            let txt = await callGemini(`你是专注于${subName}考研知识点研究和备考心理疏导的专家，我在考前几天遇到：${status}的困惑，请你给我几条简短实用的建议。不要用markdown加粗。`);
+
+            output.innerHTML = `
+                <button onclick="document.getElementById('emergency-output').classList.add('hidden')" class="absolute top-2 right-2 text-slate-400 hover:text-slate-600 p-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                ${marked.parse(cleanAIOutput(txt))}
+            `;
+            // Trigger MathJax to render formulas in the new content
+            MathJax.typesetPromise([output]);
         }
 
         async function askAiConfidence() {
@@ -518,10 +846,14 @@
             box.classList.remove('hidden');
             document.getElementById('static-answer').classList.add('hidden');
             box.innerHTML = "思考中...";
-            // Get content text
+
             const pContent = document.getElementById('problem-container').innerText;
-            const txt = await callGemini(`题目内容：${pContent}。作为名师，1.指出这题考点。2.给杨宇欣同学一句鼓励。`);
-            box.innerHTML = marked.parse(txt);
+            const role = subjects[currentSubject].aiRole; // Use the configured role (Examiner/Expert)
+
+            let txt = await callGemini(`题目内容：${pContent}。请你扮演【${role}】，一针见血、简洁明了地指出这道题的考点/陷阱。不要用markdown加粗。`);
+            box.innerHTML = marked.parse(cleanAIOutput(txt));
+            // Trigger MathJax for AI Deep Insight
+            MathJax.typesetPromise([box]);
         }
 
         // Mindset
@@ -531,14 +863,40 @@
         }
         function loadNextStrategy() {
             stratIdx = (stratIdx + 1) % strategySets.length;
-            document.getElementById('strategy-list').innerHTML = strategySets[stratIdx].map((i, x) => `<li class="flex items-start"><span class="mr-2 font-bold">${x + 1}</span><p>${i.title}：${i.text}</p></li>`).join('');
+            // Pick the first item from the set as the "Heart-to-Heart" message for simplicity in this new card style
+            const msg = strategySets[stratIdx][0];
+            document.getElementById('strategy-text').innerText = `${msg.title}：${msg.text}`;
         }
 
-        // Init
+        // API Key Logic
+        function checkApiKey() {
+            if (!apiKey) {
+                document.getElementById('api-modal').classList.remove('hidden');
+            }
+        }
+        function saveApiKey() {
+            const input = document.getElementById('input-api-key').value.trim();
+            if (input) {
+                apiKey = input;
+                localStorage.setItem("gemini_api_key", input);
+                document.getElementById('api-modal').classList.add('hidden');
+                alert("激活成功！加油！");
+            } else {
+                alert("请输入有效的 Key");
+            }
+        }
+        function clearApiKey() {
+            if (confirm("确定要重置 API Key 吗？")) {
+                localStorage.removeItem("gemini_api_key");
+                location.reload();
+            }
+        }
+
         window.onload = () => {
             switchSubject('math');
             document.getElementById('confidence-text').innerText = confidenceMsgs[0];
             loadNextStrategy();
+            checkApiKey();
         };
     </script>
 </body>
