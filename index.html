@@ -1,128 +1,243 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026考研数学一：杨宇欣同学专属冲刺系统</title>
+    <title>2026考研全科冲刺：无限题库版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- MathJax for rendering complex generated math -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
-        
-        html { scroll-behavior: smooth; }
-        body { font-family: 'Noto Sans SC', sans-serif; background-color: #f0f2f5; color: #1f2937; }
-        h1, h2, h3, .serif { font-family: 'Noto Serif SC', serif; }
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Merriweather:ital,wght@0,300;0,700;1,300&display=swap');
 
-        .custom-scroll::-webkit-scrollbar { width: 6px; }
-        .custom-scroll::-webkit-scrollbar-track { background: #f1f5f9; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        html {
+            scroll-behavior: smooth;
+        }
 
-        .loading-dots:after { content: '.'; animation: dots 1.5s steps(5, end) infinite; }
-        @keyframes dots { 0%, 20% { content: '.'; } 40% { content: '..'; } 60% { content: '...'; } 80%, 100% { content: ''; } }
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #f8fafc;
+            color: #1f2937;
+            transition: background-color 0.5s;
+        }
 
-        .prose h3 { font-size: 1.1em; font-weight: bold; margin-top: 0.8em; color: #b91c1c; }
-        .prose strong { color: #000; font-weight: 700; border-bottom: 2px solid #fecaca; }
-        
-        .fade-in { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        h1,
+        h2,
+        h3,
+        .serif {
+            font-family: 'Noto Serif SC', serif;
+        }
 
-        /* Math Styling */
-        .math-expr { font-family: 'Times New Roman', serif; font-style: italic; font-size: 1.15rem; letter-spacing: 0.3px; }
-        .math-expr sup { font-size: 0.7em; vertical-align: super; }
-        .math-expr sub { font-size: 0.7em; vertical-align: sub; }
-        .integral-symbol { font-size: 1.3em; vertical-align: middle; margin-right: 2px; }
-        
-        /* Answer Section Styles */
-        .ans-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; margin-bottom: 4px; }
-        .ans-badge-concept { background-color: #dbeafe; color: #1e40af; } 
-        .ans-badge-step { background-color: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; } 
+        .eng-font {
+            font-family: 'Merriweather', serif;
+        }
+
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Math & Answer Styles */
+        .math-expr {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+            font-size: 1.15rem;
+            letter-spacing: 0.3px;
+        }
+
+        .ans-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .eng-highlight {
+            background-color: #e0e7ff;
+            color: #3730a3;
+            padding: 0 4px;
+            border-radius: 2px;
+        }
+
+        .pol-highlight {
+            background-color: #ffe4e6;
+            color: #9f1239;
+            padding: 0 4px;
+            border-radius: 2px;
+        }
+
+        .theme-transition {
+            transition: all 0.5s ease;
+        }
+
+        /* Spinner */
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid #fff;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen flex flex-col">
+
+<body class="min-h-screen flex flex-col">
 
     <!-- Emergency Header -->
-    <nav class="bg-red-900 text-white shadow-lg sticky top-0 z-50">
+    <nav id="navbar" class="text-white shadow-lg sticky top-0 z-50 theme-transition bg-slate-900">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center space-x-3">
-                <span class="text-xl font-bold serif">杨宇欣的 Math Sprint</span>
-                <span class="text-xs bg-yellow-400 text-red-900 px-2 py-1 rounded font-bold animate-pulse">最后 7 天</span>
+                <span class="text-xl font-bold serif">YangYuxin's Infinite</span>
+                <span id="countdown-badge"
+                    class="text-xs bg-yellow-400 text-slate-900 px-2 py-1 rounded font-bold animate-pulse">最后 7 天</span>
             </div>
-            <div class="hidden md:flex space-x-8 text-sm font-medium">
-                <a href="#ai-consult" class="hover:text-yellow-300 transition flex items-center"><span class="mr-1">🤖</span> AI咨询</a>
-                <a href="#simulation" class="hover:text-yellow-300 transition flex items-center"><span class="mr-1">📝</span> 真题预测</a>
-                <a href="#mindset" class="hover:text-yellow-300 transition flex items-center"><span class="mr-1">❤️</span> 考场心态</a>
+            <div class="flex bg-white/10 rounded-lg p-1 space-x-1">
+                <button onclick="switchSubject('math')" id="nav-math"
+                    class="px-3 py-1 text-xs font-bold rounded transition bg-white text-slate-900">数学</button>
+                <button onclick="switchSubject('eng')" id="nav-eng"
+                    class="px-3 py-1 text-xs font-bold rounded transition hover:bg-white/20 text-white">英语</button>
+                <button onclick="switchSubject('pol')" id="nav-pol"
+                    class="px-3 py-1 text-xs font-bold rounded transition hover:bg-white/20 text-white">政治</button>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <header class="relative bg-gradient-to-b from-slate-900 to-slate-800 text-white py-12">
+    <header id="hero-section"
+        class="relative text-white py-12 theme-transition bg-gradient-to-b from-slate-900 to-slate-800">
         <div class="container mx-auto px-4 text-center">
-            <h1 class="text-3xl md:text-5xl font-bold mb-4 serif text-yellow-500">稳住心态，一战成硕</h1>
-            <p class="text-slate-300 text-base md:text-lg max-w-2xl mx-auto mb-8">
-                杨宇欣同学，所有你流过的汗水，都将在试卷上变成得分的墨迹。<br>现在不是怀疑的时候，是<span class="text-white font-bold border-b-2 border-red-500">相信积累</span>的时候。
+            <h1 id="hero-title" class="text-3xl md:text-5xl font-bold mb-4 serif text-yellow-400">无限题库 · 极速生成</h1>
+            <p id="hero-subtitle" class="text-slate-200 text-base md:text-lg max-w-2xl mx-auto mb-8">
+                杨宇欣同学，全学科 AI 预测引擎已就绪。<br>点击 <span class="font-bold border-b-2 border-yellow-400">🔮 AI 生成</span>，获取属于你的
+                2026 押题。
             </p>
-            
-            <!-- AI Consult Container -->
-            <div id="ai-consult" class="max-w-3xl mx-auto bg-white/10 backdrop-blur-md p-6 rounded-xl border border-white/20 shadow-2xl scroll-mt-24">
-                <div class="text-left mb-3 text-sm text-yellow-200 font-bold flex items-center">
-                    <span class="mr-2 text-xl">🆘</span> 
-                    <span>Gemini 备考急救室</span>
-                    <span class="ml-auto text-xs font-normal text-slate-300 opacity-80">遇到焦虑？不知道最后怎么复习？问我。</span>
+
+            <!-- AI Consult -->
+            <div
+                class="max-w-3xl mx-auto bg-white/10 backdrop-blur-md p-6 rounded-xl border border-white/20 shadow-2xl">
+                <div class="text-left mb-3 text-sm font-bold flex items-center text-yellow-200">
+                    <span class="mr-2 text-xl">🆘</span>
+                    <span id="ai-title">Gemini 备考急救室</span>
                 </div>
                 <div class="flex flex-col sm:flex-row gap-3">
-                    <input type="text" id="user-status" placeholder="告诉我你的困惑（例：复习不完很焦虑 / 这种题型总是算错...）" 
+                    <input type="text" id="user-status" placeholder="输入你的困惑..."
                         class="flex-grow px-5 py-3 bg-white text-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 text-sm shadow-inner">
-                    <button onclick="generateEmergencyPlan()" id="btn-emergency" class="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-bold transition whitespace-nowrap shadow-lg flex items-center justify-center">
+                    <button onclick="generateEmergencyPlan()" id="btn-emergency"
+                        class="bg-yellow-500 hover:bg-yellow-600 text-slate-900 px-8 py-3 rounded-lg font-bold transition whitespace-nowrap shadow-lg flex items-center justify-center">
                         <span>获取建议</span>
                     </button>
                 </div>
-                <div id="emergency-output" class="hidden mt-4 text-left bg-white text-slate-800 p-5 rounded-lg text-sm prose max-w-none shadow-xl border-l-4 border-red-500"></div>
+                <div id="emergency-output"
+                    class="hidden mt-4 text-left bg-white text-slate-800 p-5 rounded-lg text-sm prose max-w-none shadow-xl border-l-4 border-yellow-500">
+                </div>
             </div>
         </div>
     </header>
 
     <main class="container mx-auto px-4 py-8 space-y-16 flex-grow">
 
-        <!-- Simulation Section -->
+        <!-- Infinite Prediction Section -->
         <section id="simulation" class="scroll-mt-24">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 gap-4">
                 <div>
-                    <h2 class="text-3xl font-bold text-slate-800 border-l-8 border-red-600 pl-4">2026 预测·每日一练</h2>
-                    <p class="text-slate-500 mt-2">保持手感，每天只需做透三道题。</p>
+                    <h2 id="section-title"
+                        class="text-3xl font-bold text-slate-800 border-l-8 border-slate-600 pl-4 theme-transition">每日一练
+                        · AI 驱动</h2>
+                    <p id="section-desc" class="text-slate-500 mt-2">双模式：经典必考题(本地) / 2026预测题(AI生成)</p>
                 </div>
-                <div class="flex bg-white p-1 rounded-xl shadow-md border border-slate-200">
-                    <button onclick="changeCategory('calc')" class="text-sm px-6 py-2.5 rounded-lg font-bold transition" id="tab-calc">高数</button>
-                    <button onclick="changeCategory('alg')" class="text-sm px-6 py-2.5 rounded-lg font-bold transition" id="tab-alg">线代</button>
-                    <button onclick="changeCategory('prob')" class="text-sm px-6 py-2.5 rounded-lg font-bold transition" id="tab-prob">概率论</button>
+                <!-- Dynamic Category Buttons -->
+                <div id="category-tabs"
+                    class="flex bg-white p-1 rounded-xl shadow-md border border-slate-200 overflow-x-auto max-w-full">
+                    <!-- Injected via JS -->
                 </div>
             </div>
 
-            <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden flex flex-col md:flex-row min-h-[550px]">
+            <div
+                class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden flex flex-col md:flex-row min-h-[600px]">
                 <!-- Problem Display -->
                 <div class="w-full md:w-1/2 p-8 bg-slate-50 border-r border-slate-100 flex flex-col relative">
-                    <div class="absolute top-6 right-6 z-10">
-                         <button onclick="loadNextProblem()" class="flex items-center space-x-2 bg-white border border-slate-200 hover:border-slate-400 hover:bg-slate-50 text-slate-600 px-4 py-2 rounded-full text-xs font-bold shadow-sm transition group">
+
+                    <!-- Control Buttons -->
+                    <div class="absolute top-6 right-6 z-10 flex flex-col items-end gap-2">
+                        <button onclick="loadNextProblem()"
+                            class="flex items-center space-x-2 bg-white border border-slate-200 hover:border-slate-400 hover:bg-slate-50 text-slate-600 px-4 py-2 rounded-full text-xs font-bold shadow-sm transition group">
                             <span class="text-lg group-hover:rotate-180 transition duration-500">🔄</span>
-                            <span>换一题</span>
+                            <span>换一题 (经典)</span>
+                        </button>
+                        <!-- AI Generate Button (Universal) -->
+                        <button id="btn-ai-gen" onclick="generateAIProblem()"
+                            class="flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-2 rounded-full text-xs font-bold shadow-md hover:shadow-lg transition transform hover:scale-105">
+                            <span>🔮 AI 生成 2026 预测</span>
                         </button>
                     </div>
+
                     <div id="problem-container" class="flex-grow flex flex-col justify-center animate-fade-in"></div>
                 </div>
 
                 <!-- Solution Area -->
                 <div class="w-full md:w-1/2 p-8 flex flex-col bg-white">
-                    <div id="ai-box" class="flex-grow hidden bg-indigo-50 p-5 rounded-xl text-sm mb-4 border border-indigo-100 overflow-y-auto custom-scroll max-h-[400px] prose prose-sm prose-indigo shadow-inner"></div>
-                    <div id="static-answer" class="flex-grow hidden bg-white p-6 rounded-xl text-sm text-slate-800 mb-4 overflow-y-auto custom-scroll max-h-[400px] shadow-sm border border-slate-200 leading-relaxed"></div>
-                    <div id="placeholder" class="flex-grow flex flex-col items-center justify-center text-slate-400 text-center text-sm border-2 border-dashed border-slate-100 rounded-xl mb-4 bg-slate-50/50">
+                    <div id="ai-box"
+                        class="flex-grow hidden bg-indigo-50 p-5 rounded-xl text-sm mb-4 border border-indigo-100 overflow-y-auto custom-scroll max-h-[400px] prose prose-sm prose-indigo shadow-inner">
+                    </div>
+                    <div id="static-answer"
+                        class="flex-grow hidden bg-white p-6 rounded-xl text-sm text-slate-800 mb-4 overflow-y-auto custom-scroll max-h-[400px] shadow-sm border border-slate-200 leading-relaxed">
+                    </div>
+                    <div id="placeholder"
+                        class="flex-grow flex flex-col items-center justify-center text-slate-400 text-center text-sm border-2 border-dashed border-slate-100 rounded-xl mb-4 bg-slate-50/50">
                         <span class="text-5xl mb-4 opacity-50">✍️</span>
-                        <p class="font-medium text-slate-500">不动笔，无数学。<br>请在草稿纸上算出结果后再查看解析。</p>
+                        <p class="font-medium text-slate-500">思考是得分的关键。<br>请先构思 / 默背再看解析。</p>
                     </div>
                     <div class="grid grid-cols-2 gap-4 mt-auto">
-                        <button onclick="showStaticAnswer()" class="py-3.5 bg-slate-100 text-slate-700 rounded-xl font-bold text-sm hover:bg-slate-200 transition">查看标准解析</button>
-                        <button onclick="askAiConfidence()" id="btn-ai-help" class="py-3.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-bold text-sm hover:shadow-lg transition flex justify-center items-center"><span>✨ AI 信心点拨</span></button>
+                        <button onclick="showStaticAnswer()"
+                            class="py-3.5 bg-slate-100 text-slate-700 rounded-xl font-bold text-sm hover:bg-slate-200 transition">查看标准解析</button>
+                        <button onclick="askAiConfidence()" id="btn-ai-help"
+                            class="py-3.5 bg-gradient-to-r from-slate-700 to-slate-900 text-white rounded-xl font-bold text-sm hover:shadow-lg transition flex justify-center items-center theme-btn"><span>✨
+                                AI 深度点拨</span></button>
                     </div>
                 </div>
             </div>
@@ -130,42 +245,35 @@
 
         <!-- Mindset Section -->
         <section id="mindset" class="scroll-mt-24 mb-12">
-            <h2 class="text-3xl font-bold text-slate-800 border-l-8 border-yellow-500 pl-4 mb-6">考场心态 & 信心加油站</h2>
-            
+            <h2 id="mindset-title"
+                class="text-3xl font-bold text-slate-800 border-l-8 border-yellow-500 pl-4 mb-6 theme-transition">信心加油站
+            </h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <!-- Confidence Card -->
-                <div class="bg-gradient-to-br from-yellow-500 to-orange-500 rounded-2xl shadow-lg p-8 text-white relative overflow-hidden flex flex-col">
+                <div id="card-confidence"
+                    class="bg-gradient-to-br from-yellow-500 to-orange-500 rounded-2xl shadow-lg p-8 text-white relative overflow-hidden flex flex-col theme-transition">
                     <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-white opacity-10 rounded-full"></div>
-                    <!-- Switch Button -->
-                    <button onclick="loadNextConfidence()" class="absolute top-6 right-6 bg-white/20 hover:bg-white/30 text-white px-3 py-1 rounded-full text-xs font-bold transition flex items-center backdrop-blur-sm z-10">
+                    <button onclick="loadNextConfidence()"
+                        class="absolute top-6 right-6 bg-white/20 hover:bg-white/30 text-white px-3 py-1 rounded-full text-xs font-bold transition flex items-center backdrop-blur-sm z-10">
                         <span class="mr-1">🔄</span> 换一句
                     </button>
-
                     <h3 class="text-2xl font-bold mb-4 flex items-center">
                         <span class="mr-2">💪</span> 杨宇欣，你能行！
                     </h3>
-                    <div id="confidence-text" class="text-yellow-50 font-medium text-lg leading-relaxed mb-6 flex-grow animate-fade-in min-h-[120px]">
-                        <!-- Content Injected via JS -->
-                    </div>
-                    <div class="bg-white/20 rounded-lg p-4 backdrop-blur-sm mt-auto">
-                        <p class="font-bold text-sm mb-1">💡 崩盘急救法</p>
-                        <p class="text-xs opacity-90">深呼吸 5 秒 -> 告诉自己“我难人亦难” -> 果断跳过 -> 先拿送分题。</p>
+                    <div id="confidence-text"
+                        class="text-white/90 font-medium text-lg leading-relaxed mb-6 flex-grow animate-fade-in min-h-[120px]">
                     </div>
                 </div>
-
                 <!-- Strategy Card -->
                 <div class="bg-white rounded-2xl shadow-lg border border-slate-100 p-8 flex flex-col relative">
-                    <!-- Switch Button -->
-                    <button onclick="loadNextStrategy()" class="absolute top-6 right-6 bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-full text-xs font-bold transition flex items-center">
+                    <button onclick="loadNextStrategy()"
+                        class="absolute top-6 right-6 bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-full text-xs font-bold transition flex items-center">
                         <span class="mr-1">🔄</span> 换锦囊
                     </button>
-
                     <h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center">
-                        <span class="text-red-500 mr-2">❤️</span> 考前心里话
+                        <span class="mr-2 text-red-500">❤️</span> 考前心里话
                     </h3>
-                    <div id="strategy-list" class="space-y-4 animate-fade-in">
-                        <!-- Content Injected via JS -->
-                    </div>
+                    <div id="strategy-list" class="space-y-4 animate-fade-in"></div>
                 </div>
             </div>
         </section>
@@ -174,136 +282,138 @@
 
     <footer class="bg-slate-900 text-slate-500 py-8 text-center text-sm">
         <p class="mb-2 text-slate-400">祝 杨宇欣同学 <span class="text-yellow-500 font-bold">金榜题名 · 一战成硕</span></p>
-        <p class="opacity-60 text-xs">Generated for Math I Exam Preparation</p>
+        <p class="opacity-60 text-xs">2026 Postgraduate Entrance Exam Infinite System</p>
     </footer>
 
     <script>
-        const apiKey = "AIzaSyAe0BZJvAsCSYcIyxENDiU-N-6yN6vLIiM"; // 请在此处填入您的 API Key
+        // --- 1. CONFIGURATION ---
+        const apiKey = ""; // 请在此处填入您的 API Key
 
-        // --- PROBLEM BANK ---
-        const problemBank = {
-            'calc': [
-                {
-                    title: "分部积分循环结构",
-                    content: `<p class="math-expr">计算不定积分 I = <span class="integral-symbol">&int;</span> e<sup>2x</sup> · cos(3x) dx</p>`,
-                    answer: `<div class="space-y-4"><div><span class="ans-badge ans-badge-concept">核心考点</span><p>不定积分的分部积分法。</p></div><div><span class="ans-badge ans-badge-step">步骤</span><ul class="list-decimal pl-5 space-y-1 text-slate-700"><li>设 I = ∫ e<sup>2x</sup>cos(3x)dx。</li><li>两次分部积分后移项求解。</li><li>系数运算要非常小心 (1+9/4)I。</li></ul></div></div>`,
-                    plain: "计算不定积分 I = ∫ e^{2x} * cos(3x) dx"
-                },
-                {
-                    title: "变限积分求导",
-                    content: `<p class="math-expr">设 F(x) = <span class="integral-symbol">&int;</span><sub>0</sub><sup>x<sup>2</sup></sup> (t - x)f(t) dt，求 F'(x)</p>`,
-                    answer: `<div class="space-y-4"><div><span class="ans-badge ans-badge-concept">核心考点</span><p>变限积分求导 (含参)。</p></div><div><span class="ans-badge ans-badge-step">步骤</span><ul class="list-decimal pl-5 space-y-1 text-slate-700"><li>必须先拆分：F(x) = ∫ t·f(t)dt - x·∫ f(t)dt。</li><li>前项链式求导，后项乘法求导。</li></ul></div><div class="text-xs text-red-600 bg-red-50 p-2 rounded">⚠️ 直接求导是死穴。</div></div>`,
-                    plain: "设 F(x) = ∫[0, x^2] (t - x) * f(t) dt，求 F'(x)"
-                },
-                {
-                    title: "二重积分极坐标",
-                    content: `<p class="math-expr">计算 D 上 <span class="integral-symbol">&int;&int;</span> &radic;(x<sup>2</sup>+y<sup>2</sup>) dxdy，其中 D: x<sup>2</sup>+y<sup>2</sup> &le; 2x</p>`,
-                    answer: `<div class="space-y-4"><div><span class="ans-badge ans-badge-concept">核心考点</span><p>极坐标变换 + 点火公式。</p></div><div><span class="ans-badge ans-badge-step">步骤</span><ul class="list-decimal pl-5 space-y-1 text-slate-700"><li>区域：r &le; 2cos&theta;，角度 -&pi;/2 到 &pi;/2。</li><li>利用华里士公式快速计算 cos&theta; 的高次幂积分。</li></ul></div></div>`,
-                    plain: "计算 D 上 ∫∫ √(x^2+y^2) dxdy，其中 D: x^2+y^2 ≤ 2x"
+        // --- 2. STATIC PROBLEM BANK (FAST LOAD) ---
+        const subjects = {
+            'math': {
+                name: "数学",
+                color: "slate",
+                aiRole: "考研数学出题组长",
+                categories: [{ id: 'calc', name: '高数' }, { id: 'alg', name: '线代' }, { id: 'prob', name: '概率' }],
+                placeholder: "数学困惑 (e.g. 级数收敛判定)...",
+                problemBank: {
+                    'calc': [{ title: "分部积分循环", content: "计算不定积分 I = ∫ e^{2x} · cos(3x) dx", answer: "核心：两次分部后移项。结果 I = (1/13)e^{2x}(2cos3x+3sin3x)+C" }],
+                    'alg': [{ title: "伴随矩阵秩", content: "3阶矩阵 r(A)=1，求 r(A*)", answer: "公式：更低伴随零。r(A*)=0" }],
+                    'prob': [{ title: "最大值分布", content: "Z=max(X,Y)，独立同分布，求F(z)", answer: "结果 [F(z)]^2" }]
                 }
-            ],
-            'alg': [
-                {
-                    title: "矩阵秩的性质",
-                    content: `<p class="math-expr">设 A 为 3阶矩阵，A<sup>*</sup> 为伴随矩阵。若 r(A) = 1，则 r(A<sup>*</sup>) = ?</p>`,
-                    answer: `<div class="space-y-4"><div><span class="ans-badge ans-badge-concept">考点</span><p>r(A) 与 r(A*) 关系。</p></div><p class="font-bold">结论：r(A*) = 0。</p><p class="text-sm">公式：更低伴随零 (r(A) < n-1)。本题 1 < 2。</p></div>`,
-                    plain: "设 A 为 3阶矩阵，A* 为伴随矩阵。若 r(A) = 1，则 r(A*) = ?"
-                },
-                {
-                    title: "含参方程组",
-                    content: `<p class="math-expr">已知方程组 Ax=b 无解，A=[1 1 a; 1 a 1; a 1 1]，b=[1; a; a^2]。求 a。</p>`,
-                    answer: `<div class="space-y-4"><div><span class="ans-badge ans-badge-concept">考点</span><p>无解判定。</p></div><div><span class="ans-badge ans-badge-step">步骤</span><ul class="list-decimal pl-5 space-y-1 text-slate-700"><li>令 |A| = 0 解得 a=1, -2。</li><li>代入检验：a=1 无穷解；a=-2 无解。</li></ul></div></div>`,
-                    plain: "已知方程组 Ax=b 无解，其中 A=[1 1 a; 1 a 1; a 1 1]，b=[1; a; a^2]。求 a 的值。"
+            },
+            'eng': {
+                name: "英语",
+                color: "indigo",
+                aiRole: "考研英语审题专家",
+                categories: [{ id: 'vocab', name: '核心·词汇' }, { id: 'read', name: '阅读·逻辑' }, { id: 'write', name: '写作·话题' }],
+                placeholder: "英语困惑 (e.g. 作文没思路)...",
+                problemBank: {
+                    'vocab': [{ title: "Vocab Check", content: "Plausible", answer: "adj. 貌似可信的" }],
+                    'read': [{ title: "态度题陷阱", content: "Indifferent 是正确选项吗？", answer: "几乎必错。作者不会漠不关心。" }],
+                    'write': [{ title: "科技类开头", content: "背诵科技双刃剑开头", answer: "The past few years have witnessed..." }]
                 }
-            ],
-            'prob': [
-                {
-                    title: "最大值分布函数",
-                    content: `<p class="math-expr">设 X, Y 独立同分布于 F(x)。求 Z = max(X, Y) 的分布函数 F<sub>Z</sub>(z)。</p>`,
-                    answer: `<div class="space-y-4"><div><span class="ans-badge ans-badge-concept">考点</span><p>顺序统计量。</p></div><p>结果：[F(z)]<sup>2</sup>。</p><p class="text-sm">逻辑：最大值 &le; z &hArr; 两个都 &le; z。</p></div>`,
-                    plain: "设 X, Y 独立同分布于 F(x)。求 Z = max(X, Y) 的分布函数 F_Z(z)。"
-                },
-                {
-                    title: "二维均匀分布",
-                    content: `<p class="math-expr">设 (X,Y) 在 D: 0&lt;x&lt;1, 0&lt;y&lt;x 上均匀分布。求 P(X+Y &lt; 1)。</p>`,
-                    answer: `<div class="space-y-4"><div><span class="ans-badge ans-badge-concept">考点</span><p>几何概型。</p></div><div><span class="ans-badge ans-badge-step">步骤</span><ul class="list-decimal pl-5 space-y-1 text-slate-700"><li>画图算面积比。</li><li>重叠区域面积 0.25，总面积 0.5。</li><li>概率 0.5。</li></ul></div></div>`,
-                    plain: "设 (X,Y) 在区域 D: 0<x<1, 0<y<x 上服从均匀分布。求 P(X+Y < 1)。"
+            },
+            'pol': {
+                name: "政治",
+                color: "rose",
+                aiRole: "考研政治阅卷组长",
+                categories: [{ id: 'marx', name: '马原·分析' }, { id: 'mao', name: '毛中特·热词' }, { id: 'curr', name: '时政·押题' }],
+                placeholder: "政治困惑 (e.g. 唯物史观)...",
+                problemBank: {
+                    'marx': [{ title: "新质生产力", content: "用唯物史观分析新质生产力", answer: "生产力决定生产关系。科技革命推动高质量发展。" }],
+                    'mao': [{ title: "中国式现代化", content: "本质要求口诀？", answer: "党领社，高发全，文人共，人自命。" }],
+                    'curr': [{ title: "改革总目标", content: "完善制度，推进治理现代化", answer: "二十届三中全会考点。" }]
                 }
-            ]
+            }
         };
 
-        // --- MINDSET DATA (PERSONALIZED FOR YANG YUXIN) ---
-        const confidenceMsgs = [
-            "“杨宇欣，考研数学不是比谁做得完，而是比谁错得少。我已经准备了一年，所有的知识点都已经印在脑子里。我只需要正常发挥，该拿的分一分不丢，就是胜利。”",
-            "“乾坤未定，你我皆是黑马。杨宇欣，你在这个冬天积蓄的力量，必将在试卷上绽放光芒。相信自己，你比想象中更强大！”",
-            "“行百里者半九十，最后七天是黎明前的黑暗。杨宇欣，咬牙坚持住，那些你背过的公式、刷过的习题，都会在考场上化作你的铠甲。”",
-            "“不要慌张，不要犹豫。杨宇欣，当你在考场上提起笔的那一刻，你就已经战胜了无数人。沉着冷静，一题一题攻克，硕果终将属于你。”",
-            "“杨宇欣，你只管努力，剩下的交给时间。那些起早贪黑的日子，终将照亮你前行的路。一战成硕，势在必得！”"
-        ];
-
-        const strategySets = [
-            [
-                { title: "接受焦虑", color: "green", text: "有点紧张是好事，说明你很重视。这种适度的兴奋感会帮你调动大脑的运算速度，杨宇欣，利用好这份兴奋！" },
-                { title: "专注当下", color: "blue", text: "做题时不要想“考不上怎么办”，只想“这一步积分怎么积”。专注过程，结果自然水到渠成。" },
-                { title: "你可以的", color: "purple", text: "杨宇欣，相信那个早出晚归、刷完了一本本习题集的自己。功不唐捐，玉汝于成。" }
-            ],
-            [
-                { title: "遇难则过", color: "red", text: "遇到3分钟没思路的题，果断标记跳过。杨宇欣，不要和出题人较劲，你的目标是总分最大化。" },
-                { title: "草稿整洁", color: "yellow", text: "草稿纸分区使用，标好题号。这能救命！检查时能迅速定位错误，不用重新算一遍。" },
-                { title: "最后检查", color: "green", text: "交卷前5分钟，重点检查填空题有没有抄错数，答题卡涂没涂对。这几分比做出一道大题更稳。" }
-            ],
-            [
-                { title: "作息调整", color: "purple", text: "从今天开始，把生物钟调到早上8:30兴奋的状态。杨宇欣，中午午休不要超过30分钟，保持下午脑子清醒。" },
-                { title: "饮食清淡", color: "blue", text: "少吃油腻生冷，保护好肠胃。身体舒服，大脑才能转得快。照顾好自己也是备考的一部分。" },
-                { title: "屏蔽干扰", color: "green", text: "不要管别人复习得怎么样，也不要听各种小道消息。杨宇欣，你的世界里只有你和那张卷子。" }
-            ]
-        ];
-
-        let currentCategory = 'calc';
+        // --- 3. STATE ---
+        let currentSubject = 'math';
+        let currentCategory = '';
         let currentProblemIndex = 0;
         let confIdx = 0;
         let stratIdx = 0;
 
-        // --- Logic ---
-        function changeCategory(cat) {
-            currentCategory = cat;
-            ['calc', 'alg', 'prob'].forEach(c => {
-                const btn = document.getElementById(`tab-${c}`);
-                if (c === cat) {
-                    btn.classList.add('bg-slate-800', 'text-white', 'shadow-md');
-                    btn.classList.remove('text-slate-600', 'hover:bg-slate-100');
-                } else {
-                    btn.classList.remove('bg-slate-800', 'text-white', 'shadow-md');
-                    btn.classList.add('text-slate-600', 'hover:bg-slate-100');
-                }
+        // --- 4. DATASETS ---
+        const confidenceMsgs = ["“杨宇欣，你在这个冬天积蓄的力量，必将在试卷上绽放光芒！”", "“不要慌张，沉着冷静，一题一题攻克，硕果终将属于你。”", "“乾坤未定，你我皆是黑马。加油！”", "“行百里者半九十，坚持住！”"];
+        const strategySets = [[{ title: "专注", text: "只关注当下的题目。" }, { title: "舍得", text: "遇难则过。" }], [{ title: "细心", text: "检查填涂卡。" }, { title: "书写", text: "字迹工整得卷面分。" }]];
+
+        // --- 5. LOGIC ---
+        function switchSubject(subj) {
+            currentSubject = subj;
+            const config = subjects[subj];
+
+            // UI Updates
+            ['math', 'eng', 'pol'].forEach(s => document.getElementById(`nav-${s}`).className = s === subj ? "px-3 py-1 text-xs font-bold rounded transition bg-white text-slate-900 shadow" : "px-3 py-1 text-xs font-bold rounded transition hover:bg-white/20 text-white");
+
+            const themes = {
+                math: { nav: "bg-slate-900", hero: "from-slate-900 to-slate-800", text: "text-slate-800", border: "border-slate-600", btn: "bg-yellow-500 hover:bg-yellow-600" },
+                eng: { nav: "bg-indigo-900", hero: "from-indigo-900 to-purple-900", text: "text-slate-800", border: "border-indigo-600", btn: "bg-purple-500 hover:bg-purple-600" },
+                pol: { nav: "bg-red-900", hero: "from-red-900 to-rose-900", text: "text-slate-800", border: "border-red-600", btn: "bg-rose-500 hover:bg-rose-600" }
+            };
+            const t = themes[subj];
+
+            document.getElementById('navbar').className = `text-white shadow-lg sticky top-0 z-50 theme-transition ${t.nav}`;
+            document.getElementById('hero-section').className = `relative text-white py-12 theme-transition bg-gradient-to-b ${t.hero}`;
+            document.getElementById('section-title').className = `text-3xl font-bold ${t.text} border-l-8 ${t.border} pl-4 theme-transition`;
+            document.getElementById('btn-emergency').className = `${t.btn} text-slate-900 px-8 py-3 rounded-lg font-bold transition shadow-lg flex items-center justify-center`;
+            if (subj !== 'math') document.getElementById('btn-emergency').classList.replace('text-slate-900', 'text-white');
+
+            document.getElementById('user-status').placeholder = config.placeholder;
+            document.getElementById('ai-title').innerText = config.aiRole;
+
+            const tabs = document.getElementById('category-tabs');
+            tabs.innerHTML = config.categories.map(c => `<button onclick="changeCategory('${c.id}')" id="tab-${c.id}" class="text-sm px-4 py-2.5 rounded-lg font-bold transition whitespace-nowrap text-slate-600 hover:bg-slate-100">${c.name}</button>`).join('');
+
+            changeCategory(config.categories[0].id);
+        }
+
+        function changeCategory(id) {
+            currentCategory = id;
+            subjects[currentSubject].categories.forEach(c => {
+                const btn = document.getElementById(`tab-${c.id}`);
+                const activeColor = currentSubject === 'math' ? 'bg-slate-800' : currentSubject === 'eng' ? 'bg-indigo-800' : 'bg-red-800';
+                btn.className = c.id === id ? `text-sm px-4 py-2.5 rounded-lg font-bold whitespace-nowrap ${activeColor} text-white shadow-md` : "text-sm px-4 py-2.5 rounded-lg font-bold whitespace-nowrap text-slate-600 hover:bg-slate-100";
             });
             loadNextProblem(true);
         }
 
         function loadNextProblem(reset = false) {
-            const list = problemBank[currentCategory];
-            if (reset) {
-                currentProblemIndex = Math.floor(Math.random() * list.length);
-            } else {
-                currentProblemIndex = (currentProblemIndex + 1) % list.length;
-            }
-            const p = list[currentProblemIndex];
+            const list = subjects[currentSubject].problemBank[currentCategory];
+            if (reset) currentProblemIndex = Math.floor(Math.random() * list.length);
+            else currentProblemIndex = (currentProblemIndex + 1) % list.length;
+
+            renderProblem(list[currentProblemIndex].title, list[currentProblemIndex].content, list[currentProblemIndex].answer, false);
+        }
+
+        function renderProblem(title, content, answer, isAI) {
             const container = document.getElementById('problem-container');
-            container.classList.remove('fade-in');
-            void container.offsetWidth; 
-            container.classList.add('fade-in');
+            container.classList.remove('fade-in'); void container.offsetWidth; container.classList.add('fade-in');
+
+            let badgeClass = currentSubject === 'eng' ? "bg-purple-600" : currentSubject === 'pol' ? "bg-red-600" : "bg-amber-500";
+            let badgeText = isAI ? "🔮 AI 2026 预测" : "📝 经典母题";
+            let animate = isAI ? "animate-pulse" : "";
 
             container.innerHTML = `
                 <div class="mb-6">
-                    <span class="text-xs font-bold text-white bg-amber-500 px-2.5 py-1 rounded shadow-sm">2026 预测题</span>
-                    <span class="text-sm font-bold text-slate-500 uppercase tracking-widest ml-2">${p.title}</span>
+                    <span class="text-xs font-bold text-white ${badgeClass} px-2.5 py-1 rounded shadow-sm ${animate}">${badgeText}</span>
+                    <span class="text-sm font-bold text-slate-500 uppercase tracking-widest ml-2">${title}</span>
                 </div>
-                <div class="text-xl leading-relaxed text-slate-800 font-medium">${p.content}</div>
+                <div class="text-lg leading-relaxed text-slate-800 font-medium">${content}</div>
             `;
+
             document.getElementById('ai-box').classList.add('hidden');
             document.getElementById('static-answer').classList.add('hidden');
             document.getElementById('placeholder').classList.remove('hidden');
-            document.getElementById('static-answer').innerHTML = `<h4 class="text-amber-500 font-bold mb-4 text-xs uppercase tracking-wide border-b border-slate-100 pb-2">标准解析 Solution</h4>${p.answer}`;
+
+            // Store answer for button click
+            const ansBox = document.getElementById('static-answer');
+            let ansColor = currentSubject === 'eng' ? "text-purple-600" : currentSubject === 'pol' ? "text-red-600" : "text-amber-500";
+            ansBox.innerHTML = `<h4 class="${ansColor} font-bold mb-4 text-xs uppercase tracking-wide border-b border-slate-100 pb-2">解析 / Analysis</h4>${answer}`;
+
+            if (window.MathJax) MathJax.typesetPromise();
         }
 
         function showStaticAnswer() {
@@ -312,38 +422,9 @@
             document.getElementById('static-answer').classList.remove('hidden');
         }
 
-        // --- Mindset Logic ---
-        function loadNextConfidence() {
-            confIdx = (confIdx + 1) % confidenceMsgs.length;
-            const container = document.getElementById('confidence-text');
-            container.classList.remove('fade-in');
-            void container.offsetWidth;
-            container.classList.add('fade-in');
-            container.innerText = confidenceMsgs[confIdx];
-        }
-
-        function loadNextStrategy() {
-            stratIdx = (stratIdx + 1) % strategySets.length;
-            const set = strategySets[stratIdx];
-            const container = document.getElementById('strategy-list');
-            container.classList.remove('fade-in');
-            void container.offsetWidth;
-            container.classList.add('fade-in');
-            
-            container.innerHTML = set.map((item, idx) => `
-                <li class="flex items-start">
-                    <span class="flex-shrink-0 w-6 h-6 rounded-full bg-${item.color}-100 text-${item.color}-600 flex items-center justify-center text-xs font-bold mr-3 mt-0.5">${idx+1}</span>
-                    <p class="text-slate-600 text-sm"><strong>${item.title}：</strong>${item.text}</p>
-                </li>
-            `).join('');
-        }
-
-        // --- AI Functions ---
+        // --- 6. AI CORE GENERATION ---
         async function callGemini(prompt) {
-            if (!apiKey) {
-                alert("请在代码中填入您的 API Key 才能使用 AI 功能！");
-                return "API Key 未配置。";
-            }
+            if (!apiKey) { alert("请填入 API Key"); return null; }
             try {
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
                     method: 'POST',
@@ -352,46 +433,114 @@
                 });
                 const data = await response.json();
                 return data.candidates[0].content.parts[0].text;
-            } catch (e) { return "AI 服务繁忙，请稍后再试。"; }
+            } catch (e) { console.error(e); return null; }
         }
 
+        // The Ultimate Generator
+        async function generateAIProblem() {
+            const btn = document.getElementById('btn-ai-gen');
+            const container = document.getElementById('problem-container');
+
+            btn.disabled = true;
+            btn.innerHTML = `<span class="spinner mr-2"></span> 出题中...`;
+            container.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-slate-400"><div class="spinner border-slate-400 border-t-slate-600 mb-4"></div><p>Gemini 正在分析 2026 命题趋势...</p></div>`;
+            document.getElementById('static-answer').classList.add('hidden');
+            document.getElementById('placeholder').classList.remove('hidden');
+
+            const subConfig = subjects[currentSubject];
+            const catName = subConfig.categories.find(c => c.id === currentCategory).name;
+
+            // Dynamic Prompt Construction
+            let prompt = "";
+            if (currentSubject === 'math') {
+                prompt = `请作为考研数学出题专家，针对【数学一 · ${catName}】模块，生成一道**2026年极大概率会出现的预测题**（难度中等偏上）。
+                要求：
+                1. 题目要有具体的数学公式（使用LaTeX格式，但不要用$包裹，直接写公式）。
+                2. 必须是具体计算或证明题，不是概念问答。
+                3. 请严格按照以下格式返回HTML代码（不要Markdown标记）：
+                DIV_START
+                TITLE: {简短题名}
+                CONTENT: {题目内容 HTML}
+                ANSWER: {详细解析步骤 HTML，包含核心考点说明}
+                DIV_END`;
+            } else if (currentSubject === 'eng') {
+                prompt = `请作为考研英语出题专家，针对【英语一 · ${catName}】模块，生成一道2026预测题。
+                如果是词汇：随机选一个大纲高频难词。
+                如果是阅读：生成一段简短的学术文章（3句左右）和一个最具迷惑性的选择题。
+                如果是写作：生成一个预测话题。
+                请严格按照以下格式返回HTML代码（不要Markdown标记）：
+                DIV_START
+                TITLE: {题名}
+                CONTENT: {题目内容 HTML}
+                ANSWER: {详细解析/范文 HTML}
+                DIV_END`;
+            } else {
+                prompt = `请作为考研政治名师，结合2025-2026最新时政（如二十届三中全会、新质生产力等），针对【政治 · ${catName}】模块，生成一道预测题。
+                请严格按照以下格式返回HTML代码（不要Markdown标记）：
+                DIV_START
+                TITLE: {题名}
+                CONTENT: {题目内容 HTML}
+                ANSWER: {详细解析 HTML，包含背诵口诀}
+                DIV_END`;
+            }
+
+            const text = await callGemini(prompt);
+
+            if (text) {
+                try {
+                    const title = text.split('TITLE:')[1].split('CONTENT:')[0].trim();
+                    const content = text.split('CONTENT:')[1].split('ANSWER:')[0].trim();
+                    const answer = text.split('ANSWER:')[1].split('DIV_END')[0].trim();
+                    renderProblem(title, content, answer, true);
+                } catch (e) {
+                    container.innerHTML = `<p class="text-red-500 text-center">生成解析失败，请重试。</p>`;
+                }
+            } else {
+                container.innerHTML = `<p class="text-red-500 text-center">网络请求失败。</p>`;
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = `<span>🔮 AI 生成 2026 预测</span>`;
+        }
+
+        // Emergency & Confidence (Same logic)
         async function generateEmergencyPlan() {
             const status = document.getElementById('user-status').value;
-            const btn = document.getElementById('btn-emergency');
+            if (!status) return;
             const output = document.getElementById('emergency-output');
-            if(!status) return;
-            btn.innerText = "思考中...";
-            btn.disabled = true;
-            output.classList.remove('hidden');
-            const prompt = `今天是2025年12月13日，考研前一周。考生杨宇欣遇到问题：${status}。请用简短、有力、温暖的语言给出建议。不要长篇大论，直接给3条可执行的“急救措施”。语气要像一个靠谱的学长，多鼓励杨宇欣。`;
-            const text = await callGemini(prompt);
-            output.innerHTML = marked.parse(text);
-            btn.innerText = "获取建议";
-            btn.disabled = false;
+            output.classList.remove('hidden'); output.innerHTML = "思考中...";
+            const txt = await callGemini(`你是暖心学长。考生杨宇欣考前7天遇到：${status}。给3条简短建议。`);
+            output.innerHTML = marked.parse(txt);
         }
 
         async function askAiConfidence() {
-            const btn = document.getElementById('btn-ai-help');
-            const aiBox = document.getElementById('ai-box');
-            const currentP = problemBank[currentCategory][currentProblemIndex];
+            const box = document.getElementById('ai-box');
+            box.classList.remove('hidden');
             document.getElementById('static-answer').classList.add('hidden');
-            document.getElementById('placeholder').classList.add('hidden');
-            aiBox.classList.remove('hidden');
-            btn.innerText = "Gemini 思考中...";
-            btn.disabled = true;
-            aiBox.innerHTML = "<div class='text-center py-8 text-indigo-400'>正在提取考点与信心锦囊...</div>";
-            const prompt = `题目：${currentP.plain}。请扮演一位经验丰富的考研数学老师。1. 指出这道题的“题眼”。2. 给杨宇欣同学一句鼓励，告诉她只要细心就能拿分。格式Markdown，简短。`;
-            const text = await callGemini(prompt);
-            aiBox.innerHTML = marked.parse(text);
-            btn.innerHTML = "<span>✨ AI 信心点拨</span>";
-            btn.disabled = false;
+            box.innerHTML = "思考中...";
+            // Get content text
+            const pContent = document.getElementById('problem-container').innerText;
+            const txt = await callGemini(`题目内容：${pContent}。作为名师，1.指出这题考点。2.给杨宇欣同学一句鼓励。`);
+            box.innerHTML = marked.parse(txt);
         }
 
-        window.onload = () => { 
-            changeCategory('calc'); 
+        // Mindset
+        function loadNextConfidence() {
+            confIdx = (confIdx + 1) % confidenceMsgs.length;
+            document.getElementById('confidence-text').innerText = confidenceMsgs[confIdx];
+        }
+        function loadNextStrategy() {
+            stratIdx = (stratIdx + 1) % strategySets.length;
+            document.getElementById('strategy-list').innerHTML = strategySets[stratIdx].map((i, x) => `<li class="flex items-start"><span class="mr-2 font-bold">${x + 1}</span><p>${i.title}：${i.text}</p></li>`).join('');
+        }
+
+        // Init
+        window.onload = () => {
+            switchSubject('math');
             document.getElementById('confidence-text').innerText = confidenceMsgs[0];
-            loadNextStrategy(); // Init strategy
+            loadNextStrategy();
         };
     </script>
 </body>
+
 </html>
